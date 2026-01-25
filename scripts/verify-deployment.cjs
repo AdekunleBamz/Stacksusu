@@ -1,25 +1,25 @@
 /**
  * Verify Contract Deployment
- * Checks that all v5 contracts are deployed on mainnet
+ * Checks that all v7 contracts are deployed on mainnet
  */
 
 const DEPLOYER = 'SP3FKNEZ86RG5RT7SZ5FBRGH85FZNG94ZH1MCGG6N';
 const API_BASE = 'https://api.mainnet.hiro.so';
 
 const CONTRACTS = [
-  'stacksusu-traits-v3',
-  'stacksusu-admin-v5',
-  'stacksusu-reputation-v5',
-  'stacksusu-referral-v5',
-  'stacksusu-core-v5',
-  'stacksusu-escrow-v5',
-  'stacksusu-nft-v5',
-  'stacksusu-emergency-v5',
-  'stacksusu-governance-v5',
+  'stacksusu-traits-v5',
+  'stacksusu-admin-v7',
+  'stacksusu-reputation-v7',
+  'stacksusu-referral-v7',
+  'stacksusu-core-v7',
+  'stacksusu-escrow-v7',
+  'stacksusu-nft-v7',
+  'stacksusu-emergency-v7',
+  'stacksusu-governance-v7',
 ];
 
 async function verifyDeployment() {
-  console.log('🔍 Verifying StackSusu v5 deployment...\n');
+  console.log('🔍 Verifying StackSusu v7 deployment...\n');
   console.log(`Deployer: ${DEPLOYER}\n`);
   
   let allDeployed = true;
