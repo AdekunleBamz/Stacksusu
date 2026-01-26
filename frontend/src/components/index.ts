@@ -9,6 +9,10 @@ export { default as Navbar } from './Navbar';
 export { default as Footer } from './Footer';
 export { Sidebar } from './Sidebar';
 
+// Navigation & Disclosure components
+export { Accordion, AccordionItem } from './Accordion';
+export type { AccordionProps, AccordionItemProps } from './Accordion';
+
 // Core UI components
 export { default as Button } from './Button';
 export { default as Card, CardHeader, CardBody, CardFooter } from './Card';
