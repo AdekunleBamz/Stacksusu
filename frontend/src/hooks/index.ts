@@ -26,3 +26,9 @@ export { default as useLocalStorage } from './useLocalStorage';
 // Utility hooks
 export { useDebounce, useDebouncedCallback } from './useDebounce';
 export { default as useCopyToClipboard } from './useCopyToClipboard';
+export { 
+  useOnClickOutside,
+  useOnClickOutsideMultiple,
+  useClickOutsideRef,
+  useOnClickOutsideOrEscape,
+} from './useOnClickOutside';
