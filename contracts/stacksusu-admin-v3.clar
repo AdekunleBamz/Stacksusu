@@ -11,6 +11,9 @@
 (define-data-var treasury-address principal CONTRACT-OWNER)
 (define-map authorized-contracts principal bool)
 
+(define-event contract-authorized (contract principal))
+(define-event contract-revoked (contract principal))
+
 (define-read-only (is-contract-owner)
   (is-eq tx-sender CONTRACT-OWNER)
 )
@@ -23,6 +26,7 @@
   (begin
     (asserts! (is-contract-owner) ERR-NOT-AUTHORIZED)
     (ok (map-set authorized-contracts contract true))
+    (ok (emit-event (contract-authorized contract)))
   )
 )
 
@@ -30,6 +34,7 @@
   (begin
     (asserts! (is-contract-owner) ERR-NOT-AUTHORIZED)
     (ok (map-delete authorized-contracts contract))
+    (ok (emit-event (contract-revoked contract)))
   )
 )
 
