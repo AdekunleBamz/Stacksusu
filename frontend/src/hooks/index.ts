@@ -26,3 +26,15 @@ export { default as useLocalStorage } from './useLocalStorage';
 // Utility hooks
 export { useDebounce, useDebouncedCallback } from './useDebounce';
 export { default as useCopyToClipboard } from './useCopyToClipboard';
+
+// Additional utility hooks
+export { useThrottle } from './useThrottle';
+export { useToggle, useDisclosure } from './useToggle';
+export { useCountdown, useTimer, useStopwatch } from './useCountdown';
+export { useClipboard } from './useClipboard';
+export { usePrevious, useHasChanged, useHistory, useValueDirection, useInitialValue } from './usePrevious';
+export { useInterval, useTimeout, usePolling } from './useInterval';
+export { useMediaQuery, useBreakpoint, usePreferences } from './useMediaQuery';
+export { useScrollPosition, useScrollThreshold, useScrollLock, useScrollTo, useSaveScrollPosition } from './useScrollPosition';
+export { useDocumentTitle, useNotificationTitle, useFlashTitle } from './useDocumentTitle';
+export { useKeyboard, useEscapeKey, useEnterKey, useArrowKeys, useCommandPalette } from './useKeyboard';
