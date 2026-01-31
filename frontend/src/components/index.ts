@@ -44,6 +44,8 @@ export { TransactionItem } from './TransactionItem';
 export { ActivityFeed } from './ActivityFeed';
 export type { Activity } from './ActivityFeed';
 export { AnimatedNumber } from './AnimatedNumber';
+export { CircleActivityLog } from './CircleActivityLog';
+export type { CircleActivity, CircleActivityType } from './CircleActivityLog';
 
 // Interactive components
 export { ConnectWallet } from './ConnectWallet';
