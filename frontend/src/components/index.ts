@@ -61,3 +61,6 @@ export { FavoriteButton } from './FavoriteButton';
 // Accessibility components
 export { SkipToContent } from './SkipToContent';
 
+// Comparison components
+export { CircleComparison } from './CircleComparison';
+
