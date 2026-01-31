@@ -1,0 +1,125 @@
+.circle-activity-log {
+  width: 100%;
+}
+
+.circle-activity-log--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  color: var(--color-text-tertiary, #94a3b8);
+  text-align: center;
+}
+
+.circle-activity-log__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.circle-activity-log__item {
+  display: flex;
+  gap: 0.75rem;
+  position: relative;
+}
+
+.circle-activity-log__timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.circle-activity-log__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-bg-secondary, #f1f5f9);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.circle-activity-log__line {
+  width: 2px;
+  flex: 1;
+  min-height: 20px;
+  background: var(--color-border, #e2e8f0);
+  margin: 0.25rem 0;
+}
+
+.circle-activity-log__content {
+  flex: 1;
+  padding-bottom: 1rem;
+}
+
+.circle-activity-log__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.circle-activity-log__message {
+  font-size: 0.875rem;
+  color: var(--color-text-primary, #1e293b);
+}
+
+.circle-activity-log__actor {
+  font-weight: 600;
+  color: var(--color-primary, #6366f1);
+}
+
+.circle-activity-log__time {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary, #94a3b8);
+  margin-top: 0.25rem;
+}
+
+.circle-activity-log__more {
+  text-align: center;
+  padding: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #64748b);
+  border-top: 1px solid var(--color-border, #e2e8f0);
+}
+
+/* Color variants */
+.circle-activity-log__item--blue .circle-activity-log__icon {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.circle-activity-log__item--green .circle-activity-log__icon {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.circle-activity-log__item--purple .circle-activity-log__icon {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.circle-activity-log__item--orange .circle-activity-log__icon {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.circle-activity-log__item--red .circle-activity-log__icon {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.circle-activity-log__item--teal .circle-activity-log__icon {
+  background: #ccfbf1;
+  color: #0d9488;
+}
+
+.circle-activity-log__item--indigo .circle-activity-log__icon {
+  background: #e0e7ff;
+  color: #4f46e5;
+}
