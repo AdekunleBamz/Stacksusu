@@ -52,6 +52,10 @@ StackSUSU enables trustless, community-based savings circles where members contr
 - **Zustand** for state management
 - **Stacks.js** for blockchain interaction
 
+### Stacks SDK Usage
+- **@stacks/connect** - Wallet authentication and user session management
+- **@stacks/transactions** - Building, signing, and broadcasting Clarity transactions
+
 ## Getting Started
 
 ### Prerequisites
