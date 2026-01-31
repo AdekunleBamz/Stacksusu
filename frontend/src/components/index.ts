@@ -12,6 +12,7 @@ export { Sidebar } from './Sidebar';
 // Navigation components
 export { Breadcrumb } from './Breadcrumb';
 export type { BreadcrumbItem, BreadcrumbProps } from './Breadcrumb';
+export { ScrollToTop } from './ScrollToTop';
 
 // Core UI components
 export { default as Button } from './Button';
