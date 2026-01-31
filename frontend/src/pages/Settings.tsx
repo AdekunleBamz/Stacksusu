@@ -7,7 +7,9 @@ import {
   DollarSign, 
   LogOut, 
   Save,
-  Shield 
+  Shield,
+  Clock,
+  CalendarClock
 } from 'lucide-react';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
@@ -19,6 +21,8 @@ interface SettingsState {
   darkMode: boolean;
   language: string;
   currency: string;
+  contributionReminders: boolean;
+  reminderTiming: string;
 }
 
 interface LanguageOption {
@@ -45,12 +49,21 @@ const CURRENCY_OPTIONS: CurrencyOption[] = [
   { value: 'STX', label: 'STX only' },
 ];
 
+const REMINDER_TIMING_OPTIONS = [
+  { value: '1day', label: '1 day before' },
+  { value: '2days', label: '2 days before' },
+  { value: '3days', label: '3 days before' },
+  { value: '1week', label: '1 week before' },
+];
+
 const DEFAULT_SETTINGS: SettingsState = {
   notifications: true,
   emailAlerts: false,
   darkMode: false,
   language: 'en',
   currency: 'USD',
+  contributionReminders: true,
+  reminderTiming: '1day',
 };
 
 const Settings = memo(function Settings() {
@@ -103,7 +116,16 @@ const Settings = memo(function Settings() {
         <span className="settings__toggle-knob" />
       </button>
     ),
-  }), [settings.notifications, settings.emailAlerts, settings.darkMode, handleToggle]);
+    contributionReminders: (
+      <button
+        className={`settings__toggle ${settings.contributionReminders ? 'settings__toggle--active' : ''}`}
+        onClick={() => handleToggle('contributionReminders')}
+        aria-pressed={settings.contributionReminders}
+      >
+        <span className="settings__toggle-knob" />
+      </button>
+    ),
+  }), [settings.notifications, settings.emailAlerts, settings.darkMode, settings.contributionReminders, handleToggle]);
 
   return (
     <div className="settings">
@@ -134,6 +156,44 @@ const Settings = memo(function Settings() {
             </div>
             {toggleButtons.emailAlerts}
           </div>
+        </Card>
+
+        <Card className="settings__section">
+          <div className="settings__section-header">
+            <CalendarClock size={20} />
+            <h2 className="settings__section-title">Contribution Reminders</h2>
+          </div>
+          
+          <div className="settings__row">
+            <div className="settings__info">
+              <span className="settings__name">Enable Reminders</span>
+              <span className="settings__desc">Get notified before contribution deadlines</span>
+            </div>
+            {toggleButtons.contributionReminders}
+          </div>
+
+          {settings.contributionReminders && (
+            <div className="settings__row">
+              <div className="settings__info">
+                <Clock size={16} className="settings__row-icon" />
+                <div>
+                  <span className="settings__name">Reminder Timing</span>
+                  <span className="settings__desc">When to receive reminders</span>
+                </div>
+              </div>
+              <select
+                value={settings.reminderTiming}
+                onChange={(e) => handleSelect('reminderTiming', e.target.value)}
+                className="settings__select"
+              >
+                {REMINDER_TIMING_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </Card>
 
         <Card className="settings__section">
