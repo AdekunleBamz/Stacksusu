@@ -48,6 +48,7 @@ export { SearchBar } from './SearchBar';
 export { Pagination } from './Pagination';
 export { CopyButton, CopyText } from './CopyButton';
 export type { CopyButtonProps, CopyTextProps } from './CopyButton';
+export { ShareCircle } from './ShareCircle';
 
 // Accessibility components
 export { SkipToContent } from './SkipToContent';
