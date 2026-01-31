@@ -75,3 +75,7 @@ export { WalletQRCode } from './WalletQRCode';
 export { MemberReputationPreview } from './MemberReputationPreview';
 export type { ReputationData, MemberReputationPreviewProps } from './MemberReputationPreview';
 
+// Quick actions
+export { QuickActions } from './QuickActions';
+export type { QuickAction, QuickActionsProps } from './QuickActions';
+
