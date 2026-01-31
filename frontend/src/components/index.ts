@@ -71,3 +71,7 @@ export type { PayoutEvent } from './PayoutCalendar';
 // Wallet components
 export { WalletQRCode } from './WalletQRCode';
 
+// Member components
+export { MemberReputationPreview } from './MemberReputationPreview';
+export type { ReputationData, MemberReputationPreviewProps } from './MemberReputationPreview';
+
