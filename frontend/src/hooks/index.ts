@@ -41,3 +41,9 @@ export {
   useIsPortrait,
   useIsLandscape,
 } from './useMediaQuery';
+export { 
+  useKeyboardShortcuts,
+  getModifierKey,
+  formatShortcut,
+} from './useKeyboardShortcuts';
+export type { KeyboardShortcut, UseKeyboardShortcutsOptions } from './useKeyboardShortcuts';
