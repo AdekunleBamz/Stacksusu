@@ -16,6 +16,7 @@ export { useUserNFTs, useMarketplace, useNFTDetails } from './useNFTs';
 export { useCircle } from './useCircle';
 export { useEscrow } from './useEscrow';
 export { useReputation } from './useReputation';
+export { useFavoriteCircles } from './useFavoriteCircles';
 
 // UI & state hooks
 export { useTheme } from './useTheme';
