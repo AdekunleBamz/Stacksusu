@@ -1,6 +1,6 @@
 import { useState, useCallback, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Navbar, Footer, Spinner } from './components';
+import { Navbar, Footer, Spinner, SkipToContent } from './components';
 import './App.css';
 
 // Lazy load pages for better initial bundle size
@@ -45,13 +45,14 @@ function App() {
   return (
     <Router>
       <div className="app">
+        <SkipToContent targetId="main-content" />
         <Navbar 
           isConnected={isConnected}
           address={address}
           onConnect={handleConnect}
           onDisconnect={handleDisconnect}
         />
-        <main className="app__main">
+        <main className="app__main" id="main-content" tabIndex={-1}>
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Home />} />
