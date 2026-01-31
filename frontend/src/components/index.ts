@@ -79,3 +79,7 @@ export type { ReputationData, MemberReputationPreviewProps } from './MemberReput
 export { QuickActions } from './QuickActions';
 export type { QuickAction, QuickActionsProps } from './QuickActions';
 
+// Onboarding components
+export { WelcomeTour } from './WelcomeTour';
+export type { TourStep, WelcomeTourProps } from './WelcomeTour';
+

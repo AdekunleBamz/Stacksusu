@@ -1,0 +1,236 @@
+.welcome-tour {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+.welcome-tour__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  transition: background 0.3s ease;
+}
+
+.welcome-tour__spotlight {
+  position: absolute;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.75);
+  background: transparent;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.welcome-tour__tooltip {
+  position: absolute;
+  background: var(--color-bg-primary, white);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  max-width: 400px;
+  width: 90vw;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  animation: tooltipFadeIn 0.3s ease;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.welcome-tour__tooltip--centered {
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+}
+
+.welcome-tour__tooltip--top {
+  transform: translateX(-50%) translateY(-100%);
+}
+
+.welcome-tour__tooltip--bottom {
+  transform: translateX(-50%);
+}
+
+.welcome-tour__tooltip--left {
+  transform: translateX(-100%) translateY(-50%);
+}
+
+.welcome-tour__tooltip--right {
+  transform: translateY(-50%);
+}
+
+.welcome-tour__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: var(--color-bg-secondary, #f8fafc);
+  border: none;
+  border-radius: 50%;
+  color: var(--color-text-secondary, #64748b);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.welcome-tour__close:hover {
+  background: var(--color-bg-tertiary, #e2e8f0);
+  color: var(--color-text-primary, #1e293b);
+}
+
+.welcome-tour__image {
+  margin: -1.5rem -1.5rem 1rem -1.5rem;
+  border-radius: 1rem 1rem 0 0;
+  overflow: hidden;
+}
+
+.welcome-tour__image img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.welcome-tour__content {
+  margin-bottom: 1.25rem;
+}
+
+.welcome-tour__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1e293b);
+  margin: 0 0 0.5rem 0;
+}
+
+.welcome-tour__description {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary, #64748b);
+  margin: 0;
+}
+
+.welcome-tour__progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.welcome-tour__dots {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.welcome-tour__dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--color-text-tertiary, #94a3b8);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.welcome-tour__dot:hover {
+  color: var(--color-primary, #6366f1);
+}
+
+.welcome-tour__dot--active {
+  color: var(--color-primary, #6366f1);
+}
+
+.welcome-tour__dot--completed {
+  color: var(--color-success, #16a34a);
+}
+
+.welcome-tour__step-counter {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary, #94a3b8);
+}
+
+.welcome-tour__nav {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.welcome-tour__nav-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.welcome-tour__nav-btn--secondary {
+  background: var(--color-bg-secondary, #f8fafc);
+  border: 1px solid var(--color-border, #e2e8f0);
+  color: var(--color-text-secondary, #64748b);
+}
+
+.welcome-tour__nav-btn--secondary:hover {
+  background: var(--color-bg-tertiary, #e2e8f0);
+  color: var(--color-text-primary, #1e293b);
+}
+
+.welcome-tour__nav-btn--primary {
+  background: var(--color-primary, #6366f1);
+  border: none;
+  color: white;
+}
+
+.welcome-tour__nav-btn--primary:hover {
+  background: var(--color-primary-dark, #4f46e5);
+}
+
+.welcome-tour__progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-bg-secondary, #f8fafc);
+  border-radius: 0 0 1rem 1rem;
+  overflow: hidden;
+}
+
+.welcome-tour__progress-fill {
+  height: 100%;
+  background: var(--color-primary, #6366f1);
+  transition: width 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .welcome-tour__tooltip {
+    padding: 1.25rem;
+    max-width: 95vw;
+  }
+
+  .welcome-tour__title {
+    font-size: 1.125rem;
+  }
+
+  .welcome-tour__description {
+    font-size: 0.875rem;
+  }
+
+  .welcome-tour__image img {
+    height: 140px;
+  }
+}
