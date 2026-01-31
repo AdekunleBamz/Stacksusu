@@ -42,6 +42,7 @@ export { Stats } from './Stats';
 export { TransactionItem } from './TransactionItem';
 export { ActivityFeed } from './ActivityFeed';
 export type { Activity } from './ActivityFeed';
+export { AnimatedNumber } from './AnimatedNumber';
 
 // Interactive components
 export { ConnectWallet } from './ConnectWallet';

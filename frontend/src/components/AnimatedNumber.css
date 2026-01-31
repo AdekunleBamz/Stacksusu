@@ -1,0 +1,4 @@
+.animated-number {
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+}
