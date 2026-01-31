@@ -3,8 +3,9 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import clsx from 'clsx';
 import './Tooltip.css';
 
-export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
+export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right' | 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end';
 export type TooltipTrigger = 'hover' | 'click' | 'focus';
+export type TooltipVariant = 'default' | 'dark' | 'light' | 'info' | 'success' | 'warning' | 'error';
 
 interface TooltipProps extends HTMLAttributes<HTMLDivElement> {
   content: ReactNode;
@@ -14,6 +15,8 @@ interface TooltipProps extends HTMLAttributes<HTMLDivElement> {
   disabled?: boolean;
   arrow?: boolean;
   maxWidth?: number;
+  variant?: TooltipVariant;
+  interactive?: boolean;
   children: ReactNode;
 }
 
@@ -27,6 +30,8 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
       disabled = false,
       arrow = true,
       maxWidth = 250,
+      variant = 'default',
+      interactive = false,
       children,
       className,
       ...props
@@ -121,8 +126,15 @@ const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
           <div
             ref={tooltipRef}
             role="tooltip"
-            className={clsx('tooltip', `tooltip--${actualPosition}`)}
+            className={clsx(
+              'tooltip',
+              `tooltip--${actualPosition}`,
+              `tooltip--${variant}`,
+              interactive && 'tooltip--interactive'
+            )}
             style={{ maxWidth }}
+            onMouseEnter={interactive && trigger === 'hover' ? () => setIsVisible(true) : undefined}
+            onMouseLeave={interactive && trigger === 'hover' ? hideTooltip : undefined}
           >
             {content}
             {arrow && <span className="tooltip__arrow" />}
