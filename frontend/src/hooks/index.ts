@@ -22,6 +22,7 @@ export { useTheme } from './useTheme';
 export { useToast } from './useToast';
 export { default as useForm } from './useForm';
 export { default as useLocalStorage } from './useLocalStorage';
+export { useSearchHistory } from './useSearchHistory';
 
 // Utility hooks
 export { useDebounce, useDebouncedCallback } from './useDebounce';
