@@ -1,5 +1,5 @@
 import { memo, useState, useCallback, useMemo } from 'react';
-import { ChevronDown, ChevronUp, MessageCircle, Twitter, HelpCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, MessageCircle, Twitter, HelpCircle, Search, X } from 'lucide-react';
 import clsx from 'clsx';
 // Button functionality provided through anchor styled as button
 import './FAQ.css';
@@ -97,22 +97,42 @@ const FAQItemComponent = memo(function FAQItemComponent({
 
 const FAQ = memo(function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const toggleQuestion = useCallback((index: number) => {
     setOpenIndex(prev => prev === index ? null : index);
   }, []);
 
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setOpenIndex(null); // Close any open items when searching
+  }, []);
+
+  const clearSearch = useCallback(() => {
+    setSearchTerm('');
+  }, []);
+
+  const filteredFAQ = useMemo(() => {
+    if (!searchTerm.trim()) return FAQ_DATA;
+    const term = searchTerm.toLowerCase();
+    return FAQ_DATA.filter(
+      item =>
+        item.question.toLowerCase().includes(term) ||
+        item.answer.toLowerCase().includes(term)
+    );
+  }, [searchTerm]);
+
   const faqItems = useMemo(() =>
-    FAQ_DATA.map((item, index) => (
+    filteredFAQ.map((item, index) => (
       <FAQItemComponent
-        key={index}
+        key={item.question}
         item={item}
         index={index}
         isOpen={openIndex === index}
         onToggle={toggleQuestion}
       />
     )),
-    [openIndex, toggleQuestion]
+    [filteredFAQ, openIndex, toggleQuestion]
   );
 
   return (
@@ -122,11 +142,41 @@ const FAQ = memo(function FAQ() {
         <p className="faq__intro">
           Everything you need to know about StackSusu savings circles
         </p>
+        
+        <div className="faq__search">
+          <Search size={18} className="faq__search-icon" />
+          <input
+            type="text"
+            placeholder="Search questions..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="faq__search-input"
+          />
+          {searchTerm && (
+            <button 
+              className="faq__search-clear"
+              onClick={clearSearch}
+              aria-label="Clear search"
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
       </header>
 
-      <div className="faq__list">
-        {faqItems}
-      </div>
+      {filteredFAQ.length > 0 ? (
+        <div className="faq__list">
+          {faqItems}
+        </div>
+      ) : (
+        <div className="faq__no-results">
+          <HelpCircle size={48} />
+          <p>No questions match "{searchTerm}"</p>
+          <button onClick={clearSearch} className="faq__clear-btn">
+            Clear search
+          </button>
+        </div>
+      )}
 
       <div className="faq__contact">
         <h2 className="faq__contact-title">Still have questions?</h2>
