@@ -68,3 +68,6 @@ export { CircleComparison } from './CircleComparison';
 export { PayoutCalendar } from './PayoutCalendar';
 export type { PayoutEvent } from './PayoutCalendar';
 
+// Wallet components
+export { WalletQRCode } from './WalletQRCode';
+
