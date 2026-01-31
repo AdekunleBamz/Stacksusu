@@ -36,6 +36,7 @@ export { EmptyState } from './EmptyState';
 export { Stepper } from './Stepper';
 export type { Step, StepStatus, StepperProps } from './Stepper';
 export { DashboardSkeleton } from './DashboardSkeleton';
+export { NetworkStatus } from './NetworkStatus';
 
 // Data display components
 export { Stats } from './Stats';
