@@ -35,6 +35,7 @@ export { ToastContainer } from './ToastContainer';
 export { EmptyState } from './EmptyState';
 export { Stepper } from './Stepper';
 export type { Step, StepStatus, StepperProps } from './Stepper';
+export { DashboardSkeleton } from './DashboardSkeleton';
 
 // Data display components
 export { Stats } from './Stats';
