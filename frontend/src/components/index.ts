@@ -64,3 +64,7 @@ export { SkipToContent } from './SkipToContent';
 // Comparison components
 export { CircleComparison } from './CircleComparison';
 
+// Calendar components
+export { PayoutCalendar } from './PayoutCalendar';
+export type { PayoutEvent } from './PayoutCalendar';
+
