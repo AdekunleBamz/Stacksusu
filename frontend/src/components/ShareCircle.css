@@ -1,0 +1,96 @@
+.share-circle__trigger {
+  /* Inherit from Button */
+}
+
+.share-circle__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.share-circle__description {
+  color: var(--color-text-secondary, #64748b);
+  font-size: 0.9375rem;
+  text-align: center;
+  margin: 0;
+}
+
+.share-circle__description strong {
+  color: var(--color-text-primary, #1e293b);
+}
+
+.share-circle__link-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-bg-secondary, #f1f5f9);
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border, #e2e8f0);
+}
+
+.share-circle__link-icon {
+  color: var(--color-text-tertiary, #94a3b8);
+  flex-shrink: 0;
+}
+
+.share-circle__link-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #64748b);
+  outline: none;
+  min-width: 0;
+}
+
+.share-circle__divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--color-text-tertiary, #94a3b8);
+  font-size: 0.8125rem;
+}
+
+.share-circle__divider::before,
+.share-circle__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border, #e2e8f0);
+}
+
+.share-circle__options {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.share-circle__option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--color-bg-secondary, #f1f5f9);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--color-text-primary, #1e293b);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.share-circle__option:hover {
+  background: var(--color-bg-tertiary, #e2e8f0);
+  border-color: var(--color-primary, #6366f1);
+}
+
+.share-circle__option:active {
+  transform: scale(0.98);
+}
+
+.share-circle__option svg {
+  color: var(--color-text-secondary, #64748b);
+}
