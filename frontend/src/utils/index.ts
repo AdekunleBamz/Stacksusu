@@ -286,3 +286,4 @@ export * from './crypto';
 
 // Export utilities
 export * from './export';
+export * from './circleExport';
