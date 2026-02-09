@@ -1,0 +1,103 @@
+/**
+ * Tabs Component Styles
+ */
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs-list {
+  display: flex;
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  gap: 4px;
+}
+
+.tabs-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted, #6b7280);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tabs-trigger:hover {
+  color: var(--color-text, #374151);
+}
+
+.tabs-trigger.active {
+  color: var(--color-primary, #6366f1);
+  border-bottom-color: var(--color-primary, #6366f1);
+}
+
+.tabs-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tabs-content {
+  padding: 16px 0;
+}
+
+.tabs-content-item {
+  display: none;
+}
+
+.tabs-content-item.active {
+  display: block;
+}
+
+/* Variants */
+.tabs.pills .tabs-list {
+  gap: 8px;
+  border-bottom: none;
+  background: var(--color-bg-tertiary, #f3f4f6);
+  padding: 4px;
+  border-radius: var(--radius-md, 8px);
+}
+
+.tabs.pills .tabs-trigger {
+  border-radius: var(--radius-sm, 4px);
+  border-bottom: none;
+}
+
+.tabs.pills .tabs-trigger:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.tabs.pills .tabs-trigger.active {
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Sizes */
+.tabs.sm .tabs-trigger {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.tabs.lg .tabs-trigger {
+  padding: 12px 20px;
+  font-size: 16px;
+}
+
+/* With icon */
+.tabs-trigger-icon {
+  margin-right: 8px;
+}
+
+/* Full width */
+.tabs.full-width .tabs-list {
+  width: 100%;
+}
+
+.tabs.full-width .tabs-trigger {
+  flex: 1;
+}
