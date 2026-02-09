@@ -1,171 +1,80 @@
-/**
- * useMediaQuery Hook
- * 
- * React hook for responsive design that tracks CSS media query matches.
- * Useful for conditional rendering based on screen size or preferences.
- * 
- * @module hooks/useMediaQuery
- */
-
 import { useState, useEffect, useCallback } from 'react';
 
 /**
- * Hook to track media query matches
- * 
- * @param query - CSS media query string
- * @returns Boolean indicating if the media query matches
- * 
- * @example
- * ```tsx
- * function ResponsiveComponent() {
- *   const isMobile = useMediaQuery('(max-width: 640px)');
- *   const isTablet = useMediaQuery('(min-width: 641px) and (max-width: 1024px)');
- *   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
- *   
- *   return isMobile ? <MobileView /> : <DesktopView />;
- * }
- * ```
+ * Hook for matching a media query
  */
 export function useMediaQuery(query: string): boolean {
-  // Initialize with the current match state (SSR-safe)
-  const getMatches = useCallback((): boolean => {
-    if (typeof window === 'undefined') {
-      return false;
+  const [matches, setMatches] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia(query).matches;
     }
-    return window.matchMedia(query).matches;
-  }, [query]);
-
-  const [matches, setMatches] = useState<boolean>(getMatches);
+    return false;
+  });
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
     const mediaQuery = window.matchMedia(query);
     
-    // Update state when the query match changes
     const handleChange = (event: MediaQueryListEvent) => {
       setMatches(event.matches);
     };
 
-    // Set initial value
+    // Support older browsers
+    if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleChange);
+    } else {
+      mediaQuery.addEventListener('change', handleChange);
+    }
+
+    // Initial check
     setMatches(mediaQuery.matches);
 
-    // Modern browsers
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    } else {
-      // Legacy browsers (Safari < 14)
-      mediaQuery.addListener(handleChange);
-      return () => mediaQuery.removeListener(handleChange);
-    }
+    return () => {
+      if (mediaQuery.removeListener) {
+        mediaQuery.removeListener(handleChange);
+      } else {
+        mediaQuery.removeEventListener('change', handleChange);
+      }
+    };
   }, [query]);
 
   return matches;
 }
 
-// =============================================================================
-// Preset Breakpoint Hooks
-// =============================================================================
-
-/**
- * Tailwind-style breakpoint hooks for common screen sizes
- */
-
-/** Screen width < 640px */
-export function useIsMobile(): boolean {
-  return useMediaQuery('(max-width: 639px)');
+// Common breakpoints
+export function usePrefersDark(): boolean {
+  return useMediaQuery('(prefers-color-scheme: dark)');
 }
 
-/** Screen width >= 640px */
-export function useIsSmUp(): boolean {
-  return useMediaQuery('(min-width: 640px)');
+export function usePrefersLight(): boolean {
+  return useMediaQuery('(prefers-color-scheme: light)');
 }
 
-/** Screen width >= 768px */
-export function useIsMdUp(): boolean {
-  return useMediaQuery('(min-width: 768px)');
-}
-
-/** Screen width >= 1024px */
-export function useIsLgUp(): boolean {
-  return useMediaQuery('(min-width: 1024px)');
-}
-
-/** Screen width >= 1280px */
-export function useIsXlUp(): boolean {
-  return useMediaQuery('(min-width: 1280px)');
-}
-
-/** Screen width >= 1536px */
-export function useIs2xlUp(): boolean {
-  return useMediaQuery('(min-width: 1536px)');
-}
-
-// =============================================================================
-// Preference Hooks
-// =============================================================================
-
-/**
- * Check if user prefers reduced motion
- */
 export function usePrefersReducedMotion(): boolean {
   return useMediaQuery('(prefers-reduced-motion: reduce)');
 }
 
-/**
- * Check if user prefers dark color scheme
- */
-export function usePrefersDarkMode(): boolean {
-  return useMediaQuery('(prefers-color-scheme: dark)');
+export function usePrefersReducedData(): boolean {
+  return useMediaQuery('(prefers-reduced-data: reduce)');
 }
 
-/**
- * Check if user prefers light color scheme
- */
-export function usePrefersLightMode(): boolean {
-  return useMediaQuery('(prefers-color-scheme: light)');
+export function usePrintMode(): boolean {
+  return useMediaQuery('print');
 }
 
-/**
- * Check if user prefers high contrast
- */
-export function usePrefersHighContrast(): boolean {
-  return useMediaQuery('(prefers-contrast: more)');
+export function useScreen(): boolean {
+  return useMediaQuery('screen');
 }
 
-// =============================================================================
-// Device/Input Hooks
-// =============================================================================
-
-/**
- * Check if device has hover capability (non-touch)
- */
-export function useHasHover(): boolean {
+export function useHover(): boolean {
   return useMediaQuery('(hover: hover)');
 }
 
-/**
- * Check if device uses coarse pointer (touch)
- */
-export function useIsTouchDevice(): boolean {
+export function usePointerFine(): boolean {
+  return useMediaQuery('(pointer: fine)');
+}
+
+export function usePointerCoarse(): boolean {
   return useMediaQuery('(pointer: coarse)');
-}
-
-/**
- * Check if device is in portrait orientation
- */
-export function useIsPortrait(): boolean {
-  return useMediaQuery('(orientation: portrait)');
-}
-
-/**
- * Check if device is in landscape orientation
- */
-export function useIsLandscape(): boolean {
-  return useMediaQuery('(orientation: landscape)');
 }
 
 export default useMediaQuery;
