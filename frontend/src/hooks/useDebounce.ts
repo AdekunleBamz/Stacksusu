@@ -1,83 +1,33 @@
-/**
- * useDebounce - Debounce value and callback hooks
- * 
- * @module hooks/useDebounce
- */
-import { useState, useCallback, useRef, useEffect } from 'react';
-
-/** Result of the useDebounce hook */
-export interface UseDebounceResult<T> {
-  /** The debounced value */
-  debouncedValue: T;
-  /** Update the value (will be debounced) */
-  setValue: (value: T) => void;
-  /** Whether there's a pending debounced update */
-  isPending: boolean;
-}
+import { useState, useEffect, useRef } from 'react';
 
 /**
- * Debounce a value with a specified delay
- * @param initialValue - Initial value
- * @param delay - Debounce delay in milliseconds
+ * Hook for debouncing a value
  */
-function useDebounce<T>(initialValue: T, delay: number = 300): UseDebounceResult<T> {
-  const [debouncedValue, setDebouncedValue] = useState<T>(initialValue);
-  const [isPending, setIsPending] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
-  const setValue = useCallback((newValue: T) => {
-    setIsPending(true);
-
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      setDebouncedValue(newValue);
-      setIsPending(false);
-    }, delay);
-  }, [delay]);
-
-  // Cleanup on unmount
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
 
-  return { debouncedValue, setValue, isPending };
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
 }
 
 /**
- * Debounce a callback function
- * @param callback - The callback to debounce
- * @param delay - Debounce delay in milliseconds
+ * Hook for debouncing a callback
  */
-function useDebouncedCallback<T extends (...args: Parameters<T>) => void>(
+export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
   callback: T,
-  delay: number = 300
-): (...args: Parameters<T>) => void {
+  delay: number
+): T {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const callbackRef = useRef(callback);
 
-  // Keep callback ref up to date
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
-
-  const debouncedCallback = useCallback((...args: Parameters<T>) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      callbackRef.current(...args);
-    }, delay);
-  }, [delay]);
-
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -86,8 +36,18 @@ function useDebouncedCallback<T extends (...args: Parameters<T>) => void>(
     };
   }, []);
 
-  return debouncedCallback;
+  return useCallback(
+    ((...args: Parameters<T>) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        callback(...args);
+      }, delay);
+    }) as T,
+    [callback, delay]
+  );
 }
 
-export { useDebounce, useDebouncedCallback };
 export default useDebounce;
