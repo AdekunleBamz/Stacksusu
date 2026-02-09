@@ -1,336 +1,196 @@
 /**
- * Unified Formatters for StackSUSU
- * Centralized formatting utilities for STX amounts, addresses, dates, and more
+ * Formatter utilities
  */
-
-import { format, formatDistanceToNow, parseISO } from 'date-fns';
-
-// ============================================================================
-// Constants
-// ============================================================================
-
-const MICRO_STX_PER_STX = 1_000_000;
-const STX_DECIMALS = 6;
-
-// ============================================================================
-// STX Amount Formatting
-// ============================================================================
 
 /**
- * Convert microSTX to STX
+ * Format phone number
  */
-export function microSTXToSTX(microSTX: number | string): number {
-  const value = typeof microSTX === 'string' ? parseInt(microSTX, 10) : microSTX;
-  return value / MICRO_STX_PER_STX;
+export function formatPhone(phone: string): string {
+  const cleaned = phone.replace(/\D/g, '');
+  if (cleaned.length === 10) {
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+  }
+  if (cleaned.length === 11 && cleaned.startsWith('1')) {
+    return `+1 (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7)}`;
+  }
+  return phone;
 }
 
 /**
- * Convert STX to microSTX
+ * Format credit card number
  */
-export function stxToMicroSTX(stx: number): string {
-  return Math.floor(stx * MICRO_STX_PER_STX).toString();
+export function formatCreditCard(number: string): string {
+  const cleaned = number.replace(/\D/g, '');
+  const groups = cleaned.match(/.{1,4}/g) || [];
+  return groups.join(' ').slice(0, 19);
 }
 
 /**
- * Format STX amount with full precision
+ * Format date
  */
-export function formatSTX(
-  microSTX: number | string,
-  decimals: number = STX_DECIMALS,
-  showUnit: boolean = true
-): string {
-  const stx = microSTXToSTX(microSTX);
-  const formatted = stx.toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: decimals,
-  });
-  return showUnit ? `${formatted} STX` : formatted;
-}
-
-/**
- * Format STX with compact notation (e.g., 1.2M STX)
- */
-export function formatSTXCompact(microSTX: number | string): string {
-  const stx = microSTXToSTX(microSTX);
+export function formatDate(date: Date | string, format: 'short' | 'medium' | 'long' | 'full' = 'medium'): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
   
-  if (stx >= 1_000_000) {
-    return `${(stx / 1_000_000).toFixed(2)}M STX`;
-  }
-  if (stx >= 1_000) {
-    return `${(stx / 1_000).toFixed(2)}K STX`;
-  }
-  return formatSTX(microSTX, 2);
-}
-
-/**
- * Format STX without unit suffix
- */
-export function formatSTXValue(microSTX: number | string): string {
-  const stx = microSTXToSTX(microSTX);
+  const optionsMap: Record<string, Intl.DateTimeFormatOptions> = {
+    short: { month: 'numeric', day: 'numeric', year: '2-digit' },
+    medium: { month: 'short', day: 'numeric', year: 'numeric' },
+    long: { month: 'long', day: 'numeric', year: 'numeric' },
+    full: { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' },
+  };
   
-  if (stx >= 1_000_000) {
-    return `${(stx / 1_000_000).toFixed(1)}M`;
+  const options = optionsMap[format];
+  
+  return new Intl.DateTimeFormat('en-US', options).format(d);
+}
+
+/**
+ * Format time
+ */
+export function formatTime(date: Date | string, format: '12h' | '24h' = '12h'): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  
+  if (format === '24h') {
+    return new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
   }
-  if (stx >= 1_000) {
-    return `${(stx / 1_000).toFixed(1)}K`;
-  }
-  return stx.toFixed(2);
-}
-
-// ============================================================================
-// Address Formatting
-// ============================================================================
-
-const MAINNET_PREFIX = 'SP';
-const TESTNET_PREFIX = 'ST';
-
-/**
- * Validate Stacks address
- */
-export function isValidStacksAddress(address: string): boolean {
-  if (!address) return false;
-  const pattern = /^(SP|ST)[0-9A-HJ-NP-Z]{38,40}$/;
-  return pattern.test(address);
+  return new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit' }).format(d);
 }
 
 /**
- * Check if address is mainnet format
+ * Format relative time
  */
-export function isMainnetAddress(address: string): boolean {
-  return address.startsWith(MAINNET_PREFIX);
-}
-
-/**
- * Format address with truncation
- */
-export function formatAddress(address: string, chars: number = 4): string {
-  if (!address) return '';
-  if (address.length <= chars * 2 + 3) return address;
-  return `${address.slice(0, chars + 2)}...${address.slice(-chars)}`;
-}
-
-/**
- * Get explorer URL for address
- */
-export function getExplorerAddressUrl(address: string, chain: 'mainnet' | 'testnet' = 'mainnet'): string {
-  const baseUrl = chain === 'mainnet' 
-    ? 'https://explorer.hiro.so/address' 
-    : 'https://explorer.hiro.so/address';
-  return `${baseUrl}/${address}?chain=${chain}`;
-}
-
-// ============================================================================
-// Transaction Formatting
-// ============================================================================
-
-/**
- * Get explorer URL for transaction
- */
-export function getExplorerTxUrl(txId: string, chain: 'mainnet' | 'testnet' = 'mainnet'): string {
-  const baseUrl = chain === 'mainnet'
-    ? 'https://explorer.hiro.so/txid'
-    : 'https://explorer.hiro.so/txid';
-  return `${baseUrl}/${txId}?chain=${chain}`;
-}
-
-/**
- * Format transaction hash with truncation
- */
-export function formatTxId(txId: string, chars: number = 8): string {
-  if (!txId) return '';
-  return `${txId.slice(0, chars)}...${txId.slice(-chars)}`;
-}
-
-// ============================================================================
-// Date Formatting
-// ============================================================================
-
-/**
- * Format date with locale
- */
-export function formatDate(
-  date: string | Date,
-  formatStr: string = 'MMM d, yyyy'
-): string {
-  const d = typeof date === 'string' ? parseISO(date) : date;
-  return format(d, formatStr);
-}
-
-/**
- * Format date with time
- */
-export function formatDateTime(date: string | Date): string {
-  const d = typeof date === 'string' ? parseISO(date) : date;
-  return format(d, 'MMM d, yyyy h:mm a');
-}
-
-/**
- * Get relative time (e.g., "2 hours ago")
- */
-export function formatRelativeTime(date: string | Date): string {
-  const d = typeof date === 'string' ? parseISO(date) : date;
-  return formatDistanceToNow(d, { addSuffix: true });
-}
-
-// ============================================================================
-// Block Time Formatting
-// ============================================================================
-
-const BLOCK_TIME_MINUTES = 10;
-const BLOCKS_PER_DAY = 144;
-
-/**
- * Convert blocks to approximate time
- */
-export function blocksToTime(blocks: number): string {
-  const minutes = blocks * BLOCK_TIME_MINUTES;
+export function formatRelative(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+  
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
-
-  if (days > 0) {
-    return `~${days} day${days > 1 ? 's' : ''}`;
-  }
-  if (hours > 0) {
-    return `~${hours} hour${hours > 1 ? 's' : ''}`;
-  }
-  return `~${minutes} min`;
-}
-
-/**
- * Convert blocks to countdown format
- */
-export function blocksToCountdown(blocks: number): string {
-  if (blocks <= 0) return 'Now';
+  const weeks = Math.floor(days / 7);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
   
-  const minutes = blocks * BLOCK_TIME_MINUTES;
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const remainingHours = hours % 24;
+  if (seconds < 60) return 'just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 7) return `${days}d ago`;
+  if (weeks < 4) return `${weeks}w ago`;
+  if (months < 12) return `${months}mo ago`;
+  return `${years}y ago`;
+}
+
+/**
+ * Format file size
+ */
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 B';
   
-  if (days > 0) {
-    return remainingHours > 0 ? `${days}d ${remainingHours}h` : `${days}d`;
-  }
-  if (hours > 0) {
-    const remainingMins = minutes % 60;
-    return remainingMins > 0 ? `${hours}h ${remainingMins}m` : `${hours}h`;
-  }
-  return `${minutes}m`;
+  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+  const k = 1024;
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${units[i]}`;
 }
-
-/**
- * Convert time (days) to blocks
- */
-export function daysToBlocks(days: number): number {
-  return Math.ceil(days * BLOCKS_PER_DAY);
-}
-
-/**
- * Format block height
- */
-export function formatBlockHeight(height: number): string {
-  return height.toLocaleString();
-}
-
-// ============================================================================
-// Percentage Formatting
-// ============================================================================
 
 /**
  * Format percentage
  */
-export function formatPercent(value: number, decimals: number = 1): string {
+export function formatPercent(value: number, decimals = 0): string {
   return `${value.toFixed(decimals)}%`;
 }
 
 /**
- * Format basis points to percentage
+ * Format currency
  */
-export function bpsToPercent(bps: number): string {
-  return `${(bps / 100).toFixed(2)}%`;
-}
-
-// ============================================================================
-// Number Formatting
-// ============================================================================
-
-/**
- * Format number with commas
- */
-export function formatNumber(num: number): string {
-  return num.toLocaleString('en-US');
+export function formatCurrency(
+  value: number,
+  currency = 'USD',
+  locale = 'en-US'
+): string {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 }
 
 /**
- * Format large numbers with suffixes
+ * Format number with separators
  */
-export function formatLargeNumber(num: number): string {
-  if (num >= 1_000_000_000) {
-    return `${(num / 1_000_000_000).toFixed(1)}B`;
+export function formatNumber(value: number, locale = 'en-US'): string {
+  return new Intl.NumberFormat(locale).format(value);
+}
+
+/**
+ * Format compact number (e.g., 1.2K, 3.5M)
+ */
+export function formatCompact(value: number, locale = 'en-US'): string {
+  return new Intl.NumberFormat(locale, {
+    notation: 'compact',
+    compactDisplay: 'short',
+  }).format(value);
+}
+
+/**
+ * Format address (truncate middle)
+ */
+export function formatAddress(
+  address: string,
+  start = 6,
+  end = 4
+): string {
+  if (address.length <= start + end) return address;
+  return `${address.slice(0, start)}...${address.slice(-end)}`;
+}
+
+/**
+ * Format name (first + last initial)
+ */
+export function formatName(firstName: string, lastName?: string): string {
+  if (lastName) {
+    return `${firstName} ${lastName.charAt(0)}.`;
   }
-  if (num >= 1_000_000) {
-    return `${(num / 1_000_000).toFixed(1)}M`;
-  }
-  if (num >= 1_000) {
-    return `${(num / 1_000).toFixed(1)}K`;
-  }
-  return num.toString();
-}
-
-// ============================================================================
-// String Formatting
-// ============================================================================
-
-/**
- * Capitalize first letter
- */
-export function capitalize(str: string): string {
-  if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  return firstName;
 }
 
 /**
- * Truncate string with ellipsis
+ * Format ordinal (1st, 2nd, 3rd, etc.)
  */
-export function truncate(str: string, maxLength: number): string {
-  if (!str) return '';
-  if (str.length <= maxLength) return str;
-  return `${str.slice(0, maxLength - 3)}...`;
+export function formatOrdinal(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
 /**
- * Pluralize word
+ * Format bytes to human readable
  */
-export function pluralize(count: number, singular: string, plural?: string): string {
-  return count === 1 ? singular : (plural || `${singular}s`);
-}
-
-// ============================================================================
-// Color Generation
-// ============================================================================
-
-/**
- * Generate deterministic color from string
- */
-export function stringToColor(str: string): string {
-  if (!str) return '#6366f1';
+export function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
   
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
   
-  const hue = Math.abs(hash % 360);
-  return `hsl(${hue}, 70%, 50%)`;
+  return `${Math.round(bytes / Math.pow(1024, i))} ${sizes[i]}`;
 }
 
 /**
- * Get initials from string
+ * Format duration in milliseconds
  */
-export function getInitials(str: string, length: number = 2): string {
-  if (!str) return '??';
-  return str
-    .split(' ')
-    .map(part => part.charAt(0).toUpperCase())
-    .slice(0, length)
-    .join('');
+export function formatDuration(ms: number): string {
+  if (ms < 1000) return `${ms}ms`;
+  
+  const seconds = Math.floor(ms / 1000);
+  if (seconds < 60) return `${seconds}s`;
+  
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ${seconds % 60}s`;
+  
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ${minutes % 60}m`;
+  
+  const days = Math.floor(hours / 24);
+  return `${days}d ${hours % 24}h`;
 }
