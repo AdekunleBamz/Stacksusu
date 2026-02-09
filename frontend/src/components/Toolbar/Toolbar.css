@@ -1,0 +1,132 @@
+/**
+ * Toolbar Component Styles
+ */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--color-bg-secondary, #fff);
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+
+.toolbar-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-text, #374151);
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: var(--radius-md, 6px);
+  transition: all 0.2s ease;
+}
+
+.toolbar-item:hover {
+  background: var(--color-bg-tertiary, #f3f4f6);
+}
+
+.toolbar-item.active {
+  background: var(--color-primary, #6366f1);
+  color: white;
+}
+
+.toolbar-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--color-border, #e5e7eb);
+  margin: 0 8px;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.toolbar-dropdown {
+  position: relative;
+}
+
+.toolbar-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  min-width: 180px;
+  background: var(--color-bg-secondary, #fff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.toolbar-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-text, #374151);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.toolbar-dropdown-item:hover {
+  background: var(--color-bg-tertiary, #f9fafb);
+}
+
+.toolbar-dropdown-item:first-child {
+  border-radius: var(--radius-md, 8px) 8px 0 0;
+}
+
+.toolbar-dropdown-item:last-child {
+  border-radius: 0 0 var(--radius-md, 8px) var(--radius-md, 8px);
+}
+
+/* Sizes */
+.toolbar.sm {
+  padding: 4px 12px;
+}
+
+.toolbar.sm .toolbar-item {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.toolbar.lg {
+  padding: 12px 20px;
+}
+
+.toolbar.lg .toolbar-item {
+  padding: 10px 16px;
+  font-size: 16px;
+}
+
+/* Variants */
+.toolbar.flat {
+  background: transparent;
+  border-bottom: none;
+}
+
+.toolbar.card {
+  background: var(--color-bg-tertiary, #f9fafb);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-md, 8px);
+}
