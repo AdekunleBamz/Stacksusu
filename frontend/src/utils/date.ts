@@ -1,176 +1,186 @@
 /**
- * Date and time formatting utilities
- * 
- * @module utils/date
+ * Date utilities
  */
 
-/** Time unit constants */
-const SECOND = 1000;
-const MINUTE = SECOND * 60;
-const HOUR = MINUTE * 60;
-const DAY = HOUR * 24;
-const WEEK = DAY * 7;
-const MONTH = DAY * 30;
+import { format, formatDistance, parseISO, isValid, isToday, isYesterday, isTomorrow, addDays, addHours, addMinutes, addSeconds, differenceInDays, differenceInHours, differenceInMinutes } from 'date-fns';
 
 /**
- * Format date relative to now (e.g., "2 hours ago", "3 days ago")
+ * Format date as relative time (e.g., "2 hours ago")
  */
-export function formatRelativeTime(dateString: string | Date): string {
-  const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffSecs = Math.floor(diffMs / SECOND);
-  const diffMins = Math.floor(diffMs / MINUTE);
-  const diffHours = Math.floor(diffMs / HOUR);
-  const diffDays = Math.floor(diffMs / DAY);
-  const diffWeeks = Math.floor(diffMs / WEEK);
-  const diffMonths = Math.floor(diffMs / MONTH);
-
-  if (diffSecs < 60) return 'just now';
-  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-  if (diffWeeks < 4) return `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`;
-  if (diffMonths < 12) return `${diffMonths} month${diffMonths > 1 ? 's' : ''} ago`;
-  
-  return formatDate(date);
+export function formatRelativeTime(date: Date | string): string {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return formatDistance(d, new Date(), { addSuffix: true });
 }
 
 /**
- * Format date as "Jan 15, 2024"
+ * Format date as ISO string
  */
-export function formatDate(dateInput: string | Date): string {
-  const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
-
-// ============================================================================
-// Long Date Formatting
-// ============================================================================
-
-/**
- * Format date as "January 15, 2024"
- * @param dateString - Date string to format
- */
-export function formatDateLong(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
-
-// ============================================================================
-// Time Formatting
-// ============================================================================
-
-/**
- * Format time as "2:30 PM"
- * @param dateString - Date string to extract time from
- */
-export function formatTime(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
+export function formatDateISO(date: Date | string): string {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return format(d, 'yyyy-MM-dd');
 }
 
 /**
- * Format date and time as "Jan 15, 2024, 2:30 PM"
- * @param dateString - Date string to format
+ * Format date as short date
  */
-export function formatDateTime(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-}
-
-// ============================================================================
-// Date Calculations
-// ============================================================================
-
-/**
- * Get days until a future date
- * @param dateString - Future date string
- * @returns Number of days until date (negative if past)
- */
-export function getDaysUntil(dateString: string): number {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = date.getTime() - now.getTime();
-  return Math.ceil(diffMs / DAY);
+export function formatDateShort(date: Date | string): string {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return format(d, 'MMM d, yyyy');
 }
 
 /**
- * Add days to a date
- * @param date - Starting date
- * @param days - Number of days to add (can be negative)
+ * Format date as long date
  */
-export function addDays(date: Date, days: number): Date {
-  const result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
+export function formatDateLong(date: Date | string): string {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return format(d, 'MMMM d, yyyy');
 }
 
-// ============================================================================
-// Date Comparisons
-// ============================================================================
+/**
+ * Format time
+ */
+export function formatTime(date: Date | string): string {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return format(d, 'h:mm a');
+}
 
 /**
- * Check if date is in the past
- * @param dateString - Date string to check
+ * Format date and time
  */
-export function isPast(dateString: string): boolean {
-  return new Date(dateString) < new Date();
+export function formatDateTime(date: Date | string): string {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return format(d, 'MMM d, yyyy h:mm a');
 }
 
 /**
  * Check if date is today
- * @param dateString - Date string to check
  */
-export function isToday(dateString: string): boolean {
-  const date = new Date(dateString);
-  const today = new Date();
-  return (
-    date.getDate() === today.getDate() &&
-    date.getMonth() === today.getMonth() &&
-    date.getFullYear() === today.getFullYear()
-  );
-}
-
-// ============================================================================
-// Day Boundaries
-// ============================================================================
-
-/**
- * Get start of day (00:00:00.000)
- * @param date - Date to get start of (defaults to today)
- */
-export function startOfDay(date: Date = new Date()): Date {
-  const result = new Date(date);
-  result.setHours(0, 0, 0, 0);
-  return result;
+export function isDateToday(date: Date | string): boolean {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return isToday(d);
 }
 
 /**
- * Get end of day (23:59:59.999)
- * @param date - Date to get end of (defaults to today)
+ * Check if date is yesterday
  */
-export function endOfDay(date: Date = new Date()): Date {
-  const result = new Date(date);
-  result.setHours(23, 59, 59, 999);
-  return result;
+export function isDateYesterday(date: Date | string): boolean {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return isYesterday(d);
+}
+
+/**
+ * Check if date is tomorrow
+ */
+export function isDateTomorrow(date: Date | string): boolean {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return isTomorrow(d);
+}
+
+/**
+ * Add days to date
+ */
+export function addDaysToDate(date: Date | string, days: number): Date {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return addDays(d, days);
+}
+
+/**
+ * Add hours to date
+ */
+export function addHoursToDate(date: Date | string, hours: number): Date {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return addHours(d, hours);
+}
+
+/**
+ * Add minutes to date
+ */
+export function addMinutesToDate(date: Date | string, minutes: number): Date {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return addMinutes(d, minutes);
+}
+
+/**
+ * Add seconds to date
+ */
+export function addSecondsToDate(date: Date | string, seconds: number): Date {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return addSeconds(d, seconds);
+}
+
+/**
+ * Get difference in days
+ */
+export function diffDays(date1: Date | string, date2: Date | string): number {
+  const d1 = typeof date1 === 'string' ? parseISO(date1) : date1;
+  const d2 = typeof date2 === 'string' ? parseISO(date2) : date2;
+  return differenceInDays(d2, d1);
+}
+
+/**
+ * Get difference in hours
+ */
+export function diffHours(date1: Date | string, date2: Date | string): number {
+  const d1 = typeof date1 === 'string' ? parseISO(date1) : date1;
+  const d2 = typeof date2 === 'string' ? parseISO(date2) : date2;
+  return differenceInHours(d2, d1);
+}
+
+/**
+ * Get difference in minutes
+ */
+export function diffMinutes(date1: Date | string, date2: Date | string): number {
+  const d1 = typeof date1 === 'string' ? parseISO(date1) : date1;
+  const d2 = typeof date2 === 'string' ? parseISO(date2) : date2;
+  return differenceInMinutes(d2, d1);
+}
+
+/**
+ * Parse date string
+ */
+export function parseDate(dateString: string): Date | null {
+  const date = parseISO(dateString);
+  return isValid(date) ? date : null;
+}
+
+/**
+ * Create date from components
+ */
+export function createDate(year: number, month: number, day: number, hours = 0, minutes = 0, seconds = 0): Date {
+  return new Date(year, month - 1, day, hours, minutes, seconds);
+}
+
+/**
+ * Get start of day
+ */
+export function getStartOfDay(date: Date | string): Date {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+/**
+ * Get end of day
+ */
+export function getEndOfDay(date: Date | string): Date {
+  const d = typeof date === 'string' ? parseISO(date) : date;
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+}
+
+/**
+ * Format duration in milliseconds to human readable
+ */
+export function formatDuration(ms: number): string {
+  if (ms < 1000) return `${ms}ms`;
+  
+  const seconds = Math.floor(ms / 1000);
+  if (seconds < 60) return `${seconds}s`;
+  
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ${seconds % 60}s`;
+  
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ${minutes % 60}m`;
+  
+  const days = Math.floor(hours / 24);
+  return `${days}d ${hours % 24}h`;
 }
