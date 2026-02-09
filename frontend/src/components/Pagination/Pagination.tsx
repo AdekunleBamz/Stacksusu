@@ -1,187 +1,221 @@
-import { memo, useCallback, useMemo, forwardRef } from 'react';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
-import clsx from 'clsx';
+import React, { useState, useCallback } from 'react';
 import './Pagination.css';
 
 export interface PaginationProps {
+  /** Current page number (1-indexed) */
   currentPage: number;
-  totalPages: number;
+  /** Total number of items */
+  totalItems: number;
+  /** Number of items per page */
+  pageSize: number;
+  /** Callback when page changes */
   onPageChange: (page: number) => void;
-  showFirstLast?: boolean;
-  siblingCount?: number;
+  /** Callback when page size changes */
+  onPageSizeChange?: (size: number) => void;
+  /** Maximum number of page buttons to show */
+  maxPages?: number;
+  /** Whether to show page size selector */
+  showPageSizeSelector?: boolean;
+  /** Available page sizes */
+  pageSizeOptions?: number[];
+  /** Whether to show page info */
+  showPageInfo?: boolean;
+  /** Whether to show page jump input */
+  showPageJump?: boolean;
+  /** Size variant */
   size?: 'sm' | 'md' | 'lg';
+  /** Style variant */
+  variant?: 'default' | 'simple' | 'compact';
+  /** Custom class name */
   className?: string;
+  /** Position of pagination */
+  position?: 'left' | 'center' | 'right';
 }
 
-type PageItem = number | 'ellipsis';
-
-function range(start: number, end: number): number[] {
-  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-}
-
-function generatePages(
-  currentPage: number,
-  totalPages: number,
-  siblingCount: number
-): PageItem[] {
-  const totalNumbers = siblingCount * 2 + 3;
-  const totalBlocks = totalNumbers + 2;
-
-  if (totalPages <= totalBlocks) {
-    return range(1, totalPages);
-  }
-
-  const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
-  const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages);
-
-  const showLeftEllipsis = leftSiblingIndex > 2;
-  const showRightEllipsis = rightSiblingIndex < totalPages - 1;
-
-  if (!showLeftEllipsis && showRightEllipsis) {
-    const leftItemCount = 3 + 2 * siblingCount;
-    return [...range(1, leftItemCount), 'ellipsis', totalPages];
-  }
-
-  if (showLeftEllipsis && !showRightEllipsis) {
-    const rightItemCount = 3 + 2 * siblingCount;
-    return [1, 'ellipsis', ...range(totalPages - rightItemCount + 1, totalPages)];
-  }
-
-  return [
-    1,
-    'ellipsis',
-    ...range(leftSiblingIndex, rightSiblingIndex),
-    'ellipsis',
-    totalPages,
-  ];
-}
-
-export const Pagination = memo(forwardRef<HTMLElement, PaginationProps>(
-  function Pagination(
-    {
-      currentPage,
-      totalPages,
-      onPageChange,
-      showFirstLast = true,
-      siblingCount = 1,
-      size = 'md',
-      className,
-    },
-    ref
-  ) {
-    const pages = useMemo(
-      () => generatePages(currentPage, totalPages, siblingCount),
-      [currentPage, totalPages, siblingCount]
-    );
-
-    const handlePrevious = useCallback(() => {
-      if (currentPage > 1) {
-        onPageChange(currentPage - 1);
+export const Pagination: React.FC<PaginationProps> = ({
+  currentPage,
+  totalItems,
+  pageSize,
+  onPageChange,
+  onPageSizeChange,
+  maxPages = 5,
+  showPageSizeSelector = false,
+  pageSizeOptions = [10, 20, 50, 100],
+  showPageInfo = true,
+  showPageJump = false,
+  size = 'md',
+  variant = 'default',
+  className = '',
+  position = 'center',
+}) => {
+  const [jumpPage, setJumpPage] = useState('');
+  
+  const totalPages = Math.ceil(totalItems / pageSize);
+  
+  const getPageNumbers = useCallback(() => {
+    const pages: (number | 'ellipsis')[] = [];
+    const halfMax = Math.floor(maxPages / 2);
+    
+    let start = Math.max(1, currentPage - halfMax);
+    let end = Math.min(totalPages, start + maxPages - 1);
+    
+    if (end - start + 1 < maxPages) {
+      start = Math.max(1, end - maxPages + 1);
+    }
+    
+    if (start > 1) {
+      pages.push(1);
+      if (start > 2) {
+        pages.push('ellipsis');
       }
-    }, [currentPage, onPageChange]);
-
-    const handleNext = useCallback(() => {
-      if (currentPage < totalPages) {
-        onPageChange(currentPage + 1);
+    }
+    
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    
+    if (end < totalPages) {
+      if (end < totalPages - 1) {
+        pages.push('ellipsis');
       }
-    }, [currentPage, totalPages, onPageChange]);
-
-    const handleFirst = useCallback(() => {
-      onPageChange(1);
-    }, [onPageChange]);
-
-    const handleLast = useCallback(() => {
-      onPageChange(totalPages);
-    }, [onPageChange, totalPages]);
-
-    const handlePageClick = useCallback(
-      (page: number) => () => {
-        onPageChange(page);
-      },
-      [onPageChange]
-    );
-
-    if (totalPages <= 1) return null;
-
-    return (
-      <nav
-        ref={ref}
-        className={clsx('pagination', size !== 'md' && `pagination--${size}`, className)}
-        aria-label="Pagination"
+      pages.push(totalPages);
+    }
+    
+    return pages;
+  }, [currentPage, totalPages, maxPages]);
+  
+  const handlePageClick = (page: number) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      onPageChange(page);
+    }
+  };
+  
+  const handleJumpSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const pageNum = parseInt(jumpPage, 10);
+    if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages) {
+      onPageChange(pageNum);
+      setJumpPage('');
+    }
+  };
+  
+  const startItem = (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, totalItems);
+  
+  if (totalPages <= 0) {
+    return null;
+  }
+  
+  const pageNumbers = getPageNumbers();
+  
+  return (
+    <div 
+      className={`pagination ${size} ${variant} pagination-${position} ${className}`}
+      role="navigation"
+      aria-label="Pagination"
+    >
+      {/* Previous button */}
+      <button
+        className="pagination-btn"
+        onClick={() => handlePageClick(currentPage - 1)}
+        disabled={currentPage === 1}
+        aria-label="Previous page"
       >
-        {showFirstLast && (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      
+      {/* Page numbers */}
+      {pageNumbers.map((page, index) => {
+        if (page === 'ellipsis') {
+          return (
+            <span key={`ellipsis-${index}`} className="pagination-ellipsis">
+              ...
+            </span>
+          );
+        }
+        
+        return (
           <button
-            type="button"
-            className="pagination__btn pagination__btn--first"
-            onClick={handleFirst}
-            disabled={currentPage === 1}
-            aria-label="First page"
+            key={page}
+            className={`pagination-btn ${page === currentPage ? 'active' : ''}`}
+            onClick={() => handlePageClick(page)}
+            aria-label={`Page ${page}`}
+            aria-current={page === currentPage ? 'page' : undefined}
           >
-            <ChevronsLeft size={16} />
+            {page}
           </button>
-        )}
-
-        <button
-          type="button"
-          className="pagination__btn pagination__btn--prev"
-          onClick={handlePrevious}
-          disabled={currentPage === 1}
-          aria-label="Previous page"
-        >
-          <ChevronLeft size={16} />
-        </button>
-
-        <div className="pagination__pages">
-          {pages.map((page, index) => {
-            if (page === 'ellipsis') {
-              return (
-                <span key={`ellipsis-${index}`} className="pagination__ellipsis">
-                  ...
-                </span>
-              );
-            }
-
-            return (
-              <button
-                type="button"
-                key={page}
-                className={clsx(
-                  'pagination__page',
-                  currentPage === page && 'pagination__page--active'
-                )}
-                onClick={handlePageClick(page)}
-                aria-current={currentPage === page ? 'page' : undefined}
-              >
-                {page}
-              </button>
-            );
-          })}
+        );
+      })}
+      
+      {/* Next button */}
+      <button
+        className="pagination-btn"
+        onClick={() => handlePageClick(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        aria-label="Next page"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+      
+      {/* Page info */}
+      {showPageInfo && (
+        <div className="pagination-info">
+          {totalItems > 0 ? (
+            <>
+              <span>{startItem}-{endItem}</span>
+              <span>of</span>
+              <span>{totalItems}</span>
+            </>
+          ) : (
+            <span>No items</span>
+          )}
         </div>
-
-        <button
-          type="button"
-          className="pagination__btn pagination__btn--next"
-          onClick={handleNext}
-          disabled={currentPage === totalPages}
-          aria-label="Next page"
-        >
-          <ChevronRight size={16} />
-        </button>
-
-        {showFirstLast && (
-          <button
-            type="button"
-            className="pagination__btn pagination__btn--last"
-            onClick={handleLast}
-            disabled={currentPage === totalPages}
-            aria-label="Last page"
-          >
-            <ChevronsRight size={16} />
+      )}
+      
+      {/* Page jump */}
+      {showPageJump && (
+        <form className="pagination-jump" onSubmit={handleJumpSubmit}>
+          <input
+            type="number"
+            className="pagination-jump-input"
+            placeholder="Page #"
+            value={jumpPage}
+            onChange={(e) => setJumpPage(e.target.value)}
+            min={1}
+            max={totalPages}
+          />
+          <button type="submit" className="pagination-btn pagination-jump-btn">
+            Go
           </button>
-        )}
-      </nav>
-    );
-  }
-));
+        </form>
+      )}
+      
+      {/* Page size selector */}
+      {showPageSizeSelector && onPageSizeChange && (
+        <div className="pagination-size-selector">
+          <span style={{ fontSize: '14px', color: 'var(--color-text-muted, #6b7280)' }}>
+            per page
+          </span>
+          <select
+            className="pagination-select"
+            value={pageSize}
+            onChange={(e) => onPageSizeChange(Number(e.target.value))}
+            aria-label="Items per page"
+          >
+            {pageSizeOptions.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default Pagination;
