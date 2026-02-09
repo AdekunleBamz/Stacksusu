@@ -1,0 +1,144 @@
+/**
+ * Badge Component Styles
+ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 9999px;
+  background: var(--color-primary, #6366f1);
+  color: white;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* Variants */
+.badge.default {
+  background: var(--color-bg-tertiary, #f3f4f6);
+  color: var(--color-text, #374151);
+}
+
+.badge.primary {
+  background: var(--color-primary, #6366f1);
+  color: white;
+}
+
+.badge.secondary {
+  background: var(--color-bg-tertiary, #e5e7eb);
+  color: var(--color-text-secondary, #4b5563);
+}
+
+.badge.success {
+  background: var(--color-success, #10b981);
+  color: white;
+}
+
+.badge.warning {
+  background: var(--color-warning, #f59e0b);
+  color: white;
+}
+
+.badge.danger {
+  background: var(--color-danger, #ef4444);
+  color: white;
+}
+
+.badge.info {
+  background: var(--color-info, #3b82f6);
+  color: white;
+}
+
+/* Outline variants */
+.badge.outline-default {
+  background: transparent;
+  border: 1px solid var(--color-border, #e5e7eb);
+  color: var(--color-text, #374151);
+}
+
+.badge.outline-primary {
+  background: transparent;
+  border: 1px solid var(--color-primary, #6366f1);
+  color: var(--color-primary, #6366f1);
+}
+
+.badge.outline-success {
+  background: transparent;
+  border: 1px solid var(--color-success, #10b981);
+  color: var(--color-success, #10b981);
+}
+
+.badge.outline-warning {
+  background: transparent;
+  border: 1px solid var(--color-warning, #f59e0b);
+  color: var(--color-warning, #f59e0b);
+}
+
+.badge.outline-danger {
+  background: transparent;
+  border: 1px solid var(--color-danger, #ef4444);
+  color: var(--color-danger, #ef4444);
+}
+
+/* Sizes */
+.badge.sm {
+  padding: 1px 6px;
+  font-size: 10px;
+}
+
+.badge.md {
+  padding: 2px 8px;
+  font-size: 12px;
+}
+
+.badge.lg {
+  padding: 4px 12px;
+  font-size: 14px;
+}
+
+/* With icon */
+.badge-icon {
+  margin-right: 4px;
+}
+
+/* Pill */
+.badge.pill {
+  border-radius: 9999px;
+}
+
+/* Square */
+.badge.square {
+  border-radius: var(--radius-md, 4px);
+}
+
+/* Clickable */
+.badge.clickable {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.badge.clickable:hover {
+  opacity: 0.8;
+}
+
+/* Animated */
+.badge.pulse {
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
