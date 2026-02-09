@@ -1,41 +1,11 @@
 /**
- * String Utility Functions
- * 
- * Comprehensive string manipulation utilities.
+ * String utilities
  */
 
 /**
- * Truncate a string to a maximum length with ellipsis
- */
-export function truncate(str: string, maxLength: number, suffix: string = '...'): string {
-  if (str.length <= maxLength) return str;
-  return str.slice(0, maxLength - suffix.length) + suffix;
-}
-
-/**
- * Truncate in the middle, keeping start and end visible
- */
-export function truncateMiddle(str: string, maxLength: number, separator: string = '...'): string {
-  if (str.length <= maxLength) return str;
-  const charsToShow = maxLength - separator.length;
-  const frontChars = Math.ceil(charsToShow / 2);
-  const backChars = Math.floor(charsToShow / 2);
-  return str.slice(0, frontChars) + separator + str.slice(-backChars);
-}
-
-/**
- * Truncate a blockchain address for display
- */
-export function truncateAddress(address: string, startChars: number = 6, endChars: number = 4): string {
-  if (address.length <= startChars + endChars) return address;
-  return `${address.slice(0, startChars)}...${address.slice(-endChars)}`;
-}
-
-/**
- * Capitalize the first letter of a string
+ * Capitalize first letter
  */
 export function capitalize(str: string): string {
-  if (!str) return str;
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
@@ -46,274 +16,207 @@ export function titleCase(str: string): string {
   return str
     .toLowerCase()
     .split(' ')
-    .map(word => capitalize(word))
+    .map((word) => capitalize(word))
     .join(' ');
 }
 
 /**
- * Convert string to kebab-case
+ * Convert to camelCase
  */
-export function toKebabCase(str: string): string {
+export function camelCase(str: string): string {
+  return str
+    .replace(/[-_\s]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ''))
+    .replace(/^[A-Z]/, (c) => c.toLowerCase());
+}
+
+/**
+ * Convert to kebab-case
+ */
+export function kebabCase(str: string): string {
   return str
     .replace(/([a-z])([A-Z])/g, '$1-$2')
-    .replace(/[\s_]+/g, '-')
+    .replace(/[-_\s]+/g, '-')
     .toLowerCase();
 }
 
 /**
- * Convert string to camelCase
+ * Convert to snake_case
  */
-export function toCamelCase(str: string): string {
-  return str
-    .replace(/[-_\s]+(.)?/g, (_, char) => (char ? char.toUpperCase() : ''))
-    .replace(/^(.)/, (_, char) => char.toLowerCase());
-}
-
-/**
- * Convert string to snake_case
- */
-export function toSnakeCase(str: string): string {
+export function snakeCase(str: string): string {
   return str
     .replace(/([a-z])([A-Z])/g, '$1_$2')
-    .replace(/[-\s]+/g, '_')
+    .replace(/[-_\s]+/g, '_')
     .toLowerCase();
 }
 
 /**
- * Convert string to PascalCase
+ * Convert to PascalCase
  */
-export function toPascalCase(str: string): string {
-  const camel = toCamelCase(str);
-  return camel.charAt(0).toUpperCase() + camel.slice(1);
+export function pascalCase(str: string): string {
+  return capitalize(camelCase(str));
 }
 
 /**
- * Remove all whitespace from a string
+ * Truncate string with ellipsis
  */
-export function removeWhitespace(str: string): string {
-  return str.replace(/\s+/g, '');
+export function truncate(str: string, length: number, suffix = '...'): string {
+  if (str.length <= length) return str;
+  return str.slice(0, length - suffix.length) + suffix;
 }
 
 /**
- * Normalize whitespace (collapse multiple spaces into one)
+ * Pad string on both sides
  */
-export function normalizeWhitespace(str: string): string {
-  return str.replace(/\s+/g, ' ').trim();
+export function pad(str: string, length: number, char = ' '): string {
+  const padding = Math.max(0, length - str.length);
+  const left = Math.floor(padding / 2);
+  const right = padding - left;
+  return char.repeat(left) + str + char.repeat(right);
 }
 
 /**
- * Check if a string is empty or only whitespace
+ * Pad start of string
  */
-export function isBlank(str: string | null | undefined): boolean {
-  return !str || str.trim().length === 0;
-}
-
-/**
- * Check if a string contains only alphanumeric characters
- */
-export function isAlphanumeric(str: string): boolean {
-  return /^[a-zA-Z0-9]+$/.test(str);
-}
-
-/**
- * Check if a string is a valid email format
- */
-export function isValidEmail(str: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(str);
-}
-
-/**
- * Check if a string is a valid URL
- */
-export function isValidUrl(str: string): boolean {
-  try {
-    new URL(str);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Check if a string is a valid Stacks address
- */
-export function isValidStacksAddress(str: string): boolean {
-  // Stacks addresses start with SP (mainnet) or ST (testnet) followed by base58 characters
-  return /^S[PT][A-Za-z0-9]{38,40}$/.test(str);
-}
-
-/**
- * Check if a string is a valid transaction hash
- */
-export function isValidTxHash(str: string): boolean {
-  return /^0x[a-fA-F0-9]{64}$/.test(str) || /^[a-fA-F0-9]{64}$/.test(str);
-}
-
-/**
- * Escape HTML special characters
- */
-export function escapeHtml(str: string): string {
-  const htmlEscapes: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-  };
-  return str.replace(/[&<>"']/g, char => htmlEscapes[char]);
-}
-
-/**
- * Unescape HTML entities
- */
-export function unescapeHtml(str: string): string {
-  const htmlUnescapes: Record<string, string> = {
-    '&amp;': '&',
-    '&lt;': '<',
-    '&gt;': '>',
-    '&quot;': '"',
-    '&#39;': "'",
-  };
-  return str.replace(/&(?:amp|lt|gt|quot|#39);/g, entity => htmlUnescapes[entity] || entity);
-}
-
-/**
- * Generate a slug from a string
- */
-export function slugify(str: string): string {
-  return str
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-/**
- * Pad a string to a certain length
- */
-export function padStart(str: string, length: number, char: string = ' '): string {
+export function padStart(str: string, length: number, char = ' '): string {
   return str.padStart(length, char);
 }
 
 /**
- * Pad a string at the end to a certain length
+ * Pad end of string
  */
-export function padEnd(str: string, length: number, char: string = ' '): string {
+export function padEnd(str: string, length: number, char = ' '): string {
   return str.padEnd(length, char);
 }
 
 /**
- * Repeat a string n times
+ * Repeat string
  */
-export function repeat(str: string, times: number): string {
-  return str.repeat(times);
+export function repeat(str: string, count: number): string {
+  return str.repeat(count);
 }
 
 /**
- * Reverse a string
+ * Reverse string
  */
 export function reverse(str: string): string {
   return str.split('').reverse().join('');
 }
 
 /**
- * Count occurrences of a substring
+ * Check if string contains substring
  */
-export function countOccurrences(str: string, substring: string): number {
-  if (!substring) return 0;
-  return (str.match(new RegExp(escapeRegExp(substring), 'g')) || []).length;
+export function includes(str: string, search: string, position = 0): boolean {
+  return str.includes(search, position);
 }
 
 /**
- * Escape special regex characters in a string
+ * Check if string starts with substring
  */
-export function escapeRegExp(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+export function startsWith(str: string, search: string, position = 0): boolean {
+  return str.startsWith(search, position);
 }
 
 /**
- * Remove accents/diacritics from a string
+ * Check if string ends with substring
+ */
+export function endsWith(str: string, search: string, length?: number): boolean {
+  return str.endsWith(search, length);
+}
+
+/**
+ * Remove accents/diacritics
  */
 export function removeAccents(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 /**
- * Mask a string (e.g., for sensitive data)
+ * Slugify string
  */
-export function mask(str: string, visibleStart: number = 4, visibleEnd: number = 4, maskChar: string = '*'): string {
-  if (str.length <= visibleStart + visibleEnd) return str;
-  const start = str.slice(0, visibleStart);
-  const end = str.slice(-visibleEnd);
-  const masked = maskChar.repeat(str.length - visibleStart - visibleEnd);
-  return start + masked + end;
+export function slugify(str: string): string {
+  return kebabCase(removeAccents(str));
 }
 
 /**
- * Extract initials from a name
+ * Strip HTML tags
  */
-export function getInitials(name: string, maxLength: number = 2): string {
-  return name
-    .split(' ')
-    .map(part => part.charAt(0).toUpperCase())
-    .slice(0, maxLength)
-    .join('');
+export function stripHtml(str: string): string {
+  return str.replace(/<[^>]*>/g, '');
 }
 
 /**
- * Convert a string to a hash (simple non-cryptographic hash)
+ * Escape HTML entities
  */
-export function simpleHash(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
+export function escapeHtml(str: string): string {
+  const map: Record<string, string> = {
+    '&': '&',
+    '<': '<',
+    '>': '>',
+    '"': '"',
+    "'": '&#039;',
+  };
+  return str.replace(/[&<>"']/g, (c) => map[c]);
+}
+
+/**
+ * Unescape HTML entities
+ */
+export function unescapeHtml(str: string): string {
+  const map: Record<string, string> = {
+    '&': '&',
+    '<': '<',
+    '>': '>',
+    '"': '"',
+    '&#039;': "'",
+  };
+  return str.replace(/&|<|>|"|&#039;/g, (c) => map[c]);
+}
+
+/**
+ * Count words in string
+ */
+export function countWords(str: string): number {
+  return str.trim().split(/\s+/).filter(Boolean).length;
+}
+
+/**
+ * Count lines in string
+ */
+export function countLines(str: string): number {
+  return str.split('\n').length;
+}
+
+/**
+ * Limit words in string
+ */
+export function limitWords(str: string, limit: number, suffix = '...'): string {
+  const words = str.trim().split(/\s+/);
+  if (words.length <= limit) return str;
+  return words.slice(0, limit).join(' ') + suffix;
+}
+
+/**
+ * Format bytes to human readable
+ */
+export function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  
+  return `${Math.round(bytes / Math.pow(1024, i))} ${sizes[i]}`;
+}
+
+/**
+ * Generate initials from name
+ */
+export function getInitials(name: string, maxLength = 2): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 0) return '';
+  
+  if (parts.length === 1) {
+    return parts[0].slice(0, maxLength).toUpperCase();
   }
-  return Math.abs(hash);
+  
+  return parts.slice(0, maxLength).map(p => p[0]).join('').toUpperCase();
 }
-
-/**
- * Format a contract identifier for display
- */
-export function formatContractId(contractId: string): string {
-  const [address, name] = contractId.split('.');
-  if (!name) return contractId;
-  return `${truncateAddress(address)}.${name}`;
-}
-
-export default {
-  truncate,
-  truncateMiddle,
-  truncateAddress,
-  capitalize,
-  titleCase,
-  toKebabCase,
-  toCamelCase,
-  toSnakeCase,
-  toPascalCase,
-  removeWhitespace,
-  normalizeWhitespace,
-  isBlank,
-  isAlphanumeric,
-  isValidEmail,
-  isValidUrl,
-  isValidStacksAddress,
-  isValidTxHash,
-  escapeHtml,
-  unescapeHtml,
-  slugify,
-  padStart,
-  padEnd,
-  repeat,
-  reverse,
-  countOccurrences,
-  escapeRegExp,
-  removeAccents,
-  mask,
-  getInitials,
-  simpleHash,
-  formatContractId,
-};
