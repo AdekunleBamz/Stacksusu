@@ -1,298 +1,494 @@
 /**
- * Form validation utilities
+ * Validation Utilities for StackSUSU
  * 
- * Provides composable validation rules for form fields.
+ * Comprehensive validation functions for forms, addresses, amounts, and more.
  * 
  * @module utils/validation
- * 
- * @example
- * ```typescript
- * const rules = [required(), minLength(3), maxLength(50)];
- * const result = validate('my value', rules);
- * if (!result.isValid) {
- *   console.log(result.errors);
- * }
- * ```
  */
 
 // ============================================================================
 // Types
 // ============================================================================
 
-/** Validation rule with validator function and error message */
-export interface ValidationRule {
-  /** Validation function that returns true if valid */
-  validate: (value: unknown) => boolean;
-  /** Error message to display if validation fails */
-  message: string;
-}
+/** Validation rule function */
+export type ValidationRule<T> = (value: T) => ValidationResult;
 
-/** Result of running validation rules */
+/** Validation result */
 export interface ValidationResult {
-  /** Whether all validations passed */
+  /** Whether validation passed */
+  valid: boolean;
+  /** Error message if validation failed */
+  message?: string;
+}
+
+/** Form validation state */
+export interface ValidationState {
+  /** Field-level validation errors */
+  errors: Record<string, string | null>;
+  /** Whether the entire form is valid */
   isValid: boolean;
-  /** Array of error messages from failed validations */
-  errors: string[];
+  /** Whether any field has been touched */
+  touched: Record<string, boolean>;
 }
 
 // ============================================================================
-// Required Validation
+// STX Amount Validation
 // ============================================================================
 
-/**
- * Required field validation
- * @param message - Custom error message
- */
-export function required(message: string = 'This field is required'): ValidationRule {
-  return {
-    validate: (value: unknown) => {
-      if (value === null || value === undefined) return false;
-      if (typeof value === 'string') return value.trim().length > 0;
-      if (Array.isArray(value)) return value.length > 0;
-      return true;
-    },
-    message,
-  };
-}
-
-// ============================================================================
-// Length Validations
-// ============================================================================
+const MIN_STX_AMOUNT = 0.000001; // Minimum 1 microSTX
+const MAX_STX_AMOUNT = 1_000_000_000; // Maximum 1B STX
 
 /**
- * Minimum length validation
- * @param min - Minimum character count
- * @param message - Custom error message
+ * Validate STX amount
  */
-export function minLength(min: number, message?: string): ValidationRule {
-  return {
-    validate: (value: unknown) => {
-      if (!value) return true; // Let required handle empty
-      return String(value).length >= min;
-    },
-    message: message || `Must be at least ${min} characters`,
-  };
+export function validateSTXAmount(amount: number): ValidationResult {
+  if (amount === 0) {
+    return { valid: false, message: 'Amount must be greater than 0' };
+  }
+  if (amount < MIN_STX_AMOUNT) {
+    return { valid: false, message: `Minimum amount is ${MIN_STX_AMOUNT} STX` };
+  }
+  if (amount > MAX_STX_AMOUNT) {
+    return { valid: false, message: `Maximum amount is ${MAX_STX_AMOUNT} STX` };
+  }
+  if (!Number.isFinite(amount)) {
+    return { valid: false, message: 'Invalid number' };
+  }
+  if (Number.isNaN(amount)) {
+    return { valid: false, message: 'Amount cannot be NaN' };
+  }
+  return { valid: true };
 }
 
 /**
- * Maximum length validation
- * @param max - Maximum character count
- * @param message - Custom error message
+ * Validate contribution amount
  */
-export function maxLength(max: number, message?: string): ValidationRule {
-  return {
-    validate: (value: unknown) => {
-      if (!value) return true;
-      return String(value).length <= max;
-    },
-    message: message || `Must be at most ${max} characters`,
-  };
-}
-
-// ============================================================================
-// Numeric Validations
-// ============================================================================
-
-/**
- * Minimum value validation
- * @param minValue - Minimum allowed value
- * @param message - Custom error message
- */
-export function min(minValue: number, message?: string): ValidationRule {
-  return {
-    validate: (value: unknown) => {
-      if (value === null || value === undefined || value === '') return true;
-      return Number(value) >= minValue;
-    },
-    message: message || `Must be at least ${minValue}`,
-  };
-}
-
-/**
- * Maximum value validation
- */
-export function max(maxValue: number, message?: string): ValidationRule {
-  return {
-    validate: (value: unknown) => {
-      if (value === null || value === undefined || value === '') return true;
-      return Number(value) <= maxValue;
-    },
-    message: message || `Must be at most ${maxValue}`,
-  };
-}
-
-/**
- * Pattern validation
- */
-export function pattern(regex: RegExp, message: string): ValidationRule {
-  return {
-    validate: (value: any) => {
-      if (!value) return true;
-      return regex.test(String(value));
-    },
-    message,
-  };
-}
-
-// ============================================================================
-// Common Format Validations
-// ============================================================================
-
-/** Email regex pattern */
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/** Stacks address regex pattern (SP for mainnet, ST for testnet) */
-const STACKS_ADDRESS_PATTERN = /^(SP|ST)[0-9A-HJ-NP-Z]{38,40}$/;
-
-/**
- * Email validation
- * @param message - Custom error message
- */
-export function email(message: string = 'Invalid email address'): ValidationRule {
-  return pattern(EMAIL_PATTERN, message);
-}
-
-/**
- * Stacks address validation
- * @param message - Custom error message
- */
-export function stacksAddress(message: string = 'Invalid Stacks address'): ValidationRule {
-  return pattern(STACKS_ADDRESS_PATTERN, message);
-}
-
-/**
- * Positive number validation
- * @param message - Custom error message
- */
-export function positive(message: string = 'Must be a positive number'): ValidationRule {
-  return {
-    validate: (value: unknown) => {
-      if (value === null || value === undefined || value === '') return true;
-      return Number(value) > 0;
-    },
-    message,
-  };
-}
-
-/**
- * Integer validation
- * @param message - Custom error message
- */
-export function integer(message: string = 'Must be a whole number'): ValidationRule {
-  return {
-    validate: (value: unknown) => {
-      if (value === null || value === undefined || value === '') return true;
-      return Number.isInteger(Number(value));
-    },
-    message,
-  };
-}
-
-// ============================================================================
-// Composite Validation Rules (for specific fields)
-// ============================================================================
-
-/** Circle name allowed characters pattern */
-const CIRCLE_NAME_PATTERN = /^[a-zA-Z0-9\s\-_]+$/;
-
-/**
- * Circle name validation rules
- * @returns Array of validation rules for circle names
- */
-export function circleName(): ValidationRule[] {
-  return [
-    required('Circle name is required'),
-    minLength(3, 'Circle name must be at least 3 characters'),
-    maxLength(50, 'Circle name must be at most 50 characters'),
-    pattern(CIRCLE_NAME_PATTERN, 'Circle name can only contain letters, numbers, spaces, hyphens, and underscores'),
-  ];
-}
-
-/**
- * Contribution amount validation rules
- * @returns Array of validation rules for contribution amounts
- */
-export function contributionAmount(): ValidationRule[] {
-  return [
-    required('Contribution amount is required'),
-    positive('Contribution must be greater than 0'),
-    min(0.1, 'Minimum contribution is 0.1 STX'),
-    max(10000, 'Maximum contribution is 10,000 STX'),
-  ];
-}
-
-/**
- * Max members validation
- */
-export function maxMembers(): ValidationRule[] {
-  return [
-    required('Maximum members is required'),
-    integer('Must be a whole number'),
-    min(2, 'Minimum 2 members required'),
-    max(20, 'Maximum 20 members allowed'),
-  ];
-}
-
-/**
- * Payout interval validation
- */
-export function payoutInterval(): ValidationRule[] {
-  return [
-    required('Payout interval is required'),
-    integer('Must be a whole number'),
-    min(1, 'Minimum 1 day interval'),
-    max(30, 'Maximum 30 day interval'),
-  ];
-}
-
-/**
- * Validate a value against rules
- */
-export function validate(value: any, rules: ValidationRule[]): ValidationResult {
-  const errors: string[] = [];
-  
-  for (const rule of rules) {
-    if (!rule.validate(value)) {
-      errors.push(rule.message);
-    }
+export function validateContribution(
+  contribution: number,
+  maxMembers: number
+): ValidationResult {
+  const amountValidation = validateSTXAmount(contribution);
+  if (!amountValidation.valid) {
+    return amountValidation;
   }
   
-  return {
-    isValid: errors.length === 0,
-    errors,
+  const totalContribution = contribution * maxMembers;
+  if (totalContribution > MAX_STX_AMOUNT) {
+    return { 
+      valid: false, 
+      message: 'Total contribution exceeds maximum allowed' 
+    };
+  }
+  
+  return { valid: true };
+}
+
+// ============================================================================
+// Stacks Address Validation
+// ============================================================================
+
+const STACKS_ADDRESS_REGEX = /^(SP|ST)[0-9A-HJ-NP-Z]{38,40}$/;
+const STACKS_ADDRESS_LENGTH = 40;
+
+/**
+ * Validate Stacks address format
+ */
+export function validateStacksAddress(address: string): ValidationResult {
+  if (!address) {
+    return { valid: false, message: 'Address is required' };
+  }
+  
+  if (!STACKS_ADDRESS_REGEX.test(address)) {
+    return { 
+      valid: false, 
+      message: 'Invalid Stacks address format' 
+    };
+  }
+  
+  return { valid: true };
+}
+
+/**
+ * Check if address is mainnet
+ */
+export function isMainnetAddress(address: string): boolean {
+  return address.startsWith('SP');
+}
+
+/**
+ * Check if address is testnet
+ */
+export function isTestnetAddress(address: string): boolean {
+  return address.startsWith('ST');
+}
+
+// ============================================================================
+// Circle Validation
+// ============================================================================
+
+const CIRCLE_NAME_MIN_LENGTH = 3;
+const CIRCLE_NAME_MAX_LENGTH = 50;
+const MIN_MEMBERS = 3;
+const MAX_MEMBERS = 50;
+const MIN_PAYOUT_INTERVAL_DAYS = 1;
+const MAX_PAYOUT_INTERVAL_DAYS = 30;
+
+/**
+ * Validate circle name
+ */
+export function validateCircleName(name: string): ValidationResult {
+  if (!name || name.trim().length === 0) {
+    return { valid: false, message: 'Circle name is required' };
+  }
+  
+  const trimmedName = name.trim();
+  
+  if (trimmedName.length < CIRCLE_NAME_MIN_LENGTH) {
+    return { 
+      valid: false, 
+      message: `Name must be at least ${CIRCLE_NAME_MIN_LENGTH} characters` 
+    };
+  }
+  
+  if (trimmedName.length > CIRCLE_NAME_MAX_LENGTH) {
+    return { 
+      valid: false, 
+      message: `Name must be no more than ${CIRCLE_NAME_MAX_LENGTH} characters` 
+    };
+  }
+  
+  // Check for invalid characters
+  const invalidChars = /[<>{}[\]\\|]/;
+  if (invalidChars.test(trimmedName)) {
+    return { 
+      valid: false, 
+      message: 'Name contains invalid characters' 
+    };
+  }
+  
+  return { valid: true };
+}
+
+/**
+ * Validate member count
+ */
+export function validateMemberCount(count: number): ValidationResult {
+  if (!Number.isInteger(count)) {
+    return { valid: false, message: 'Member count must be a whole number' };
+  }
+  
+  if (count < MIN_MEMBERS) {
+    return { 
+      valid: false, 
+      message: `Circle must have at least ${MIN_MEMBERS} members` 
+    };
+  }
+  
+  if (count > MAX_MEMBERS) {
+    return { 
+      valid: false, 
+      message: `Circle cannot have more than ${MAX_MEMBERS} members` 
+    };
+  }
+  
+  return { valid: true };
+}
+
+/**
+ * Validate payout interval
+ */
+export function validatePayoutInterval(days: number): ValidationResult {
+  if (!Number.isInteger(days)) {
+    return { valid: false, message: 'Interval must be a whole number' };
+  }
+  
+  if (days < MIN_PAYOUT_INTERVAL_DAYS) {
+    return { 
+      valid: false, 
+      message: `Interval must be at least ${MIN_PAYOUT_INTERVAL_DAYS} day(s)` 
+    };
+  }
+  
+  if (days > MAX_PAYOUT_INTERVAL_DAYS) {
+    return { 
+      valid: false, 
+      message: `Interval cannot exceed ${MAX_PAYOUT_INTERVAL_DAYS} days` 
+    };
+  }
+  
+  return { valid: true };
+}
+
+/**
+ * Validate circle configuration
+ */
+export interface CircleConfig {
+  name: string;
+  contribution: number;
+  maxMembers: number;
+  payoutIntervalDays: number;
+  contributionMode: number;
+  minReputation: number;
+}
+
+export function validateCircleConfig(config: CircleConfig): ValidationState {
+  const errors: Record<string, string | null> = {};
+  let isValid = true;
+  const touched: Record<string, boolean> = {};
+  
+  const validations: [string, ValidationRule<any>][] = [
+    ['name', () => validateCircleName(config.name)],
+    ['contribution', () => validateSTXAmount(config.contribution)],
+    ['maxMembers', () => validateMemberCount(config.maxMembers)],
+    ['payoutIntervalDays', () => validatePayoutInterval(config.payoutIntervalDays)],
+  ];
+  
+  for (const [field, validate] of validations) {
+    touched[field] = true;
+    const result = validate(config[field as keyof CircleConfig]);
+    errors[field] = result.valid ? null : result.message || null;
+    if (!result.valid) isValid = false;
+  }
+  
+  return { errors, isValid, touched };
+}
+
+// ============================================================================
+// Form Validation Helpers
+// ============================================================================
+
+/**
+ * Common validation rules
+ */
+export const validationRules = {
+  required: (message = 'This field is required'): ValidationRule<string> => {
+    return (value: string) => ({
+      valid: value.trim().length > 0,
+      message,
+    });
+  },
+  
+  email: (message = 'Invalid email address'): ValidationRule<string> => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return (value: string) => ({
+      valid: emailRegex.test(value),
+      message,
+    });
+  },
+  
+  minLength: (length: number, message?: string): ValidationRule<string> => {
+    return (value: string) => ({
+      valid: value.length >= length,
+      message: message || `Must be at least ${length} characters`,
+    });
+  },
+  
+  maxLength: (length: number, message?: string): ValidationRule<string> => {
+    return (value: string) => ({
+      valid: value.length <= length,
+      message: message || `Must be no more than ${length} characters`,
+    });
+  },
+  
+  pattern: (regex: RegExp, message = 'Invalid format'): ValidationRule<string> => {
+    return (value: string) => ({
+      valid: regex.test(value),
+      message,
+    });
+  },
+  
+  min: (min: number, message?: string): ValidationRule<number> => {
+    return (value: number) => ({
+      valid: value >= min,
+      message: message || `Must be at least ${min}`,
+    });
+  },
+  
+  max: (max: number, message?: string): ValidationRule<number> => {
+    return (value: number) => ({
+      valid: value <= max,
+      message: message || `Must be no more than ${max}`,
+    });
+  },
+};
+
+/**
+ * Compose multiple validation rules
+ */
+export function composeRules<T>(
+  ...rules: ValidationRule<T>[]
+): ValidationRule<T> {
+  return (value: T) => {
+    for (const rule of rules) {
+      const result = rule(value);
+      if (!result.valid) {
+        return result;
+      }
+    }
+    return { valid: true };
   };
 }
 
 /**
- * Validate an object against field rules
+ * Validate form with composed rules
  */
 export function validateForm<T extends Record<string, any>>(
   values: T,
-  fieldRules: Partial<Record<keyof T, ValidationRule[]>>
-): Record<keyof T, ValidationResult> {
-  const results = {} as Record<keyof T, ValidationResult>;
+  rules: Record<keyof T, ValidationRule<any>>
+): ValidationState {
+  const errors: Record<string, string | null> = {};
+  const touched: Record<string, boolean> = {};
+  let isValid = true;
   
-  for (const [field, rules] of Object.entries(fieldRules)) {
-    if (rules) {
-      results[field as keyof T] = validate(values[field], rules as ValidationRule[]);
+  for (const key of Object.keys(values)) {
+    const value = values[key];
+    const fieldRules = rules[key];
+    
+    if (fieldRules) {
+      touched[key] = true;
+      const result = fieldRules(value);
+      errors[key] = result.valid ? null : result.message || null;
+      if (!result.valid) isValid = false;
     }
   }
   
-  return results;
+  return { errors, isValid, touched };
+}
+
+// ============================================================================
+// Password Validation
+// ============================================================================
+
+const PASSWORD_MIN_LENGTH = 8;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+
+/**
+ * Validate password strength
+ */
+export function validatePassword(password: string): ValidationResult {
+  if (!password) {
+    return { valid: false, message: 'Password is required' };
+  }
+  
+  if (password.length < PASSWORD_MIN_LENGTH) {
+    return { 
+      valid: false, 
+      message: `Password must be at least ${PASSWORD_MIN_LENGTH} characters` 
+    };
+  }
+  
+  if (!PASSWORD_REGEX.test(password)) {
+    return { 
+      valid: false, 
+      message: 'Password must include uppercase, lowercase, number, and special character' 
+    };
+  }
+  
+  return { valid: true };
 }
 
 /**
- * Check if form is valid
+ * Check password strength score (0-4)
  */
-export function isFormValid<T extends Record<string, any>>(
-  results: Record<keyof T, ValidationResult>
-): boolean {
-  return Object.values(results).every(r => (r as ValidationResult).isValid);
+export function getPasswordStrength(password: string): number {
+  let score = 0;
+  
+  if (password.length >= 8) score++;
+  if (password.length >= 12) score++;
+  if (/[a-z]/.test(password)) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/\d/.test(password)) score++;
+  if (/[@$!%*?&]/.test(password)) score++;
+  
+  return Math.min(score, 4);
 }
 
+// ============================================================================
+// URL Validation
+// ============================================================================
+
+const URL_REGEX = /^https?:\/\/[^\s<>"{}|\\^`[\]]+$/;
+
 /**
- * Get first error for a field
+ * Validate URL format
  */
-export function getFirstError(result: ValidationResult): string | undefined {
-  return result.errors[0];
+export function validateUrl(url: string): ValidationResult {
+  if (!url) {
+    return { valid: false, message: 'URL is required' };
+  }
+  
+  if (!URL_REGEX.test(url)) {
+    return { valid: false, message: 'Invalid URL format' };
+  }
+  
+  return { valid: true };
+}
+
+// ============================================================================
+// Contract ID Validation
+// ============================================================================
+
+const CONTRACT_ID_REGEX = /^[A-Z0-9\-_]\.[a-zA-Z0-9\-_]+$/;
+
+/**
+ * Validate Clarity contract ID format (address.contract-name)
+ */
+export function validateContractId(contractId: string): ValidationResult {
+  if (!contractId) {
+    return { valid: false, message: 'Contract ID is required' };
+  }
+  
+  if (!CONTRACT_ID_REGEX.test(contractId)) {
+    return { 
+      valid: false, 
+      message: 'Invalid contract ID format (expected: address.contract-name)' 
+    };
+  }
+  
+  const [address, name] = contractId.split('.');
+  const addressValidation = validateStacksAddress(address);
+  if (!addressValidation.valid) {
+    return { valid: false, message: 'Invalid address in contract ID' };
+  }
+  
+  if (name.length === 0 || name.length > 128) {
+    return { 
+      valid: false, 
+      message: 'Contract name must be between 1 and 128 characters' 
+    };
+  }
+  
+  return { valid: true };
+}
+
+// ============================================================================
+// Reputation Score Validation
+// ============================================================================
+
+const MIN_REPUTATION = 0;
+const MAX_REPUTATION = 1000;
+
+/**
+ * Validate reputation score
+ */
+export function validateReputationScore(score: number): ValidationResult {
+  if (Number.isNaN(score)) {
+    return { valid: false, message: 'Invalid reputation score' };
+  }
+  
+  if (score < MIN_REPUTATION) {
+    return { 
+      valid: false, 
+      message: `Score cannot be less than ${MIN_REPUTATION}` 
+    };
+  }
+  
+  if (score > MAX_REPUTATION) {
+    return { 
+      valid: false, 
+      message: `Score cannot exceed ${MAX_REPUTATION}` 
+    };
+  }
+  
+  return { valid: true };
 }
