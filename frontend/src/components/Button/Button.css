@@ -1,0 +1,162 @@
+/**
+ * Button Component Styles
+ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radius-md, 6px);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Variants */
+.btn.primary {
+  background: var(--color-primary, #6366f1);
+  color: white;
+}
+
+.btn.primary:hover:not(:disabled) {
+  background: var(--color-primary-dark, #4f46e5);
+}
+
+.btn.secondary {
+  background: var(--color-bg-tertiary, #f3f4f6);
+  color: var(--color-text, #374151);
+}
+
+.btn.secondary:hover:not(:disabled) {
+  background: var(--color-border, #e5e7eb);
+}
+
+.btn.outline {
+  background: transparent;
+  border: 1px solid var(--color-border, #d1d5db);
+  color: var(--color-text, #374151);
+}
+
+.btn.outline:hover:not(:disabled) {
+  background: var(--color-bg-tertiary, #f9fafb);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--color-text, #374151);
+}
+
+.btn.ghost:hover:not(:disabled) {
+  background: var(--color-bg-tertiary, #f3f4f6);
+}
+
+.btn.danger {
+  background: var(--color-danger, #ef4444);
+  color: white;
+}
+
+.btn.danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.btn.success {
+  background: var(--color-success, #10b981);
+  color: white;
+}
+
+.btn.success:hover:not(:disabled) {
+  background: #059669;
+}
+
+/* Sizes */
+.btn.sm {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.btn.md {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.btn.lg {
+  padding: 14px 28px;
+  font-size: 16px;
+}
+
+/* Full width */
+.btn.full-width {
+  width: 100%;
+}
+
+/* With icon */
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Loading state */
+.btn-loading {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+.btn-spinner {
+  animation: btn-spin 1s linear infinite;
+}
+
+@keyframes btn-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Icon button */
+.btn.icon-only {
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.btn.icon-only.sm {
+  padding: 6px;
+}
+
+.btn.icon-only.lg {
+  padding: 14px;
+}
+
+/* Button group */
+.btn-group {
+  display: inline-flex;
+}
+
+.btn-group .btn {
+  border-radius: 0;
+}
+
+.btn-group .btn:first-child {
+  border-radius: var(--radius-md, 6px) 0 0 var(--radius-md, 6px);
+}
+
+.btn-group .btn:last-child {
+  border-radius: 0 var(--radius-md, 6px) var(--radius-md, 6px) 0;
+}
