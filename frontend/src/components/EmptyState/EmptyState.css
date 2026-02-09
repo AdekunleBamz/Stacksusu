@@ -1,0 +1,102 @@
+/**
+ * EmptyState Component Styles
+ */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.empty-state-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 24px;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.empty-state-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text, #111827);
+  margin: 0 0 8px;
+}
+
+.empty-state-description {
+  font-size: 14px;
+  color: var(--color-text-muted, #6b7280);
+  margin: 0 0 24px;
+  max-width: 400px;
+}
+
+.empty-state-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Sizes */
+.empty-state.sm {
+  padding: 32px 16px;
+}
+
+.empty-state.sm .empty-state-icon {
+  width: 48px;
+  height: 48px;
+}
+
+.empty-state.sm .empty-state-title {
+  font-size: 14px;
+}
+
+.empty-state.sm .empty-state-description {
+  font-size: 13px;
+}
+
+.empty-state.lg {
+  padding: 64px 32px;
+}
+
+.empty-state.lg .empty-state-icon {
+  width: 120px;
+  height: 120px;
+}
+
+.empty-state.lg .empty-state-title {
+  font-size: 24px;
+}
+
+.empty-state.lg .empty-state-description {
+  font-size: 16px;
+}
+
+/* With illustration */
+.empty-state.has-image .empty-state-icon {
+  background: var(--color-bg-tertiary, #f3f4f6);
+  border-radius: 50%;
+}
+
+/* Inline variant */
+.empty-state.inline {
+  flex-direction: row;
+  text-align: left;
+  padding: 16px;
+  background: var(--color-bg-tertiary, #f9fafb);
+  border-radius: var(--radius-md, 8px);
+}
+
+.empty-state.inline .empty-state-icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 0;
+  margin-right: 16px;
+}
+
+.empty-state.inline .empty-state-content {
+  flex: 1;
+}
