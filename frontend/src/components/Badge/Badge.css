@@ -1,0 +1,129 @@
+/**
+ * Badge Component Styles
+ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+/* Variants */
+.badge.default {
+  background: var(--color-bg-tertiary, #f3f4f6);
+  color: var(--color-text, #374151);
+}
+
+.badge.primary {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--color-primary, #6366f1);
+}
+
+.badge.success {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success, #10b981);
+}
+
+.badge.warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning, #f59e0b);
+}
+
+.badge.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger, #ef4444);
+}
+
+.badge.info {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.badge.outline {
+  background: transparent;
+  border: 1px solid var(--color-border, #d1d5db);
+  color: var(--color-text, #374151);
+}
+
+.badge.solid {
+  background: var(--color-primary, #6366f1);
+  color: white;
+}
+
+/* Sizes */
+.badge.sm {
+  padding: 2px 6px;
+  font-size: 10px;
+}
+
+.badge.md {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.badge.lg {
+  padding: 6px 14px;
+  font-size: 14px;
+}
+
+/* With dot */
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.badge.sm .badge-dot {
+  width: 5px;
+  height: 5px;
+}
+
+.badge.lg .badge-dot {
+  width: 8px;
+  height: 8px;
+}
+
+/* Badge with icon */
+.badge-icon {
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+}
+
+/* Badge in pill shape */
+.badge.pill {
+  border-radius: var(--radius-md, 6px);
+}
+
+/* Notification badge */
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 10px;
+  line-height: 18px;
+  text-align: center;
+}
+
+.notification-badge.sm {
+  min-width: 14px;
+  height: 14px;
+  font-size: 8px;
+  line-height: 14px;
+}
+
+.notification-badge.lg {
+  min-width: 22px;
+  height: 22px;
+  font-size: 12px;
+  line-height: 22px;
+}
