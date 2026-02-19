@@ -1,0 +1,11 @@
+# Default owners for everything
+* @AdekunleBamz
+
+# Contracts
+/contracts/ @AdekunleBamz
+
+# Tests
+/tests/ @AdekunleBamz
+
+# Infrastructure
+/.github/ @AdekunleBamz
