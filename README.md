@@ -1,5 +1,7 @@
 # StackSUSU
 
+[![Contracts CI](https://github.com/AdekunleBamz/Stacksusu/actions/workflows/contracts.yml/badge.svg)](https://github.com/AdekunleBamz/Stacksusu/actions/workflows/contracts.yml)
+
 A decentralized savings circle (SUSU/ROSCA) platform built on the Stacks blockchain.
 
 ## Overview
