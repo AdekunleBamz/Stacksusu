@@ -368,3 +368,16 @@
 (define-read-only (has-contributed (circle-id uint) (round uint) (member principal))
   (is-some (map-get? round-contributions { circle-id: circle-id, round: round, member: member }))
 )
+
+;; Get circle statistics
+(define-read-only (get-circle-stats (circle-id uint))
+  (let ((circle (unwrap! (map-get? circles circle-id) none)))
+    (some {
+      total-contributed: (get total-contributed circle),
+      total-paid-out: (get total-paid-out circle),
+      member-count: (get member-count circle),
+      current-pot: (get current-pot circle),
+      status: (get status circle)
+    })
+  )
+)
